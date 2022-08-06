@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %} Заказ добавлен! {% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <h3>Заказ сохранен:</h3>
+        Сумма: {{ ride.price}}<br>
+        Водитель: {{ ride.driver }}<br>
+        Автомобиль: {{ ride.car }}<br>
+    </div>
+    <div class="col-md-8 mx-auto">
+        <a href="{% url 'new_ride'%}">Добавить еще заказ</a><br>
+        <a href="{% url 'rides_all'%}">Посмотреть все заказы</a><br>
+    </div>
+</div>
+
+{% endblock %}

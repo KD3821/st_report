@@ -6,7 +6,7 @@ class Shift(models.Model):
     date = DateField()
 
     def __str__(self):
-        return self.date
+        return f'{self.date}'
 
 
 class Car(models.Model):
@@ -46,7 +46,7 @@ class Ride(models.Model):
     toll = IntegerField(default=0)
     save_tax = BooleanField(default=False)
     extra_tax = IntegerField(default=0)
-    comment = TextField()
+    comment = TextField(max_length=200, blank=True)
 
     def __str__(self):
         return self.number
