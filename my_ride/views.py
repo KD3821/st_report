@@ -1,13 +1,26 @@
 from django.shortcuts import render
 from django.views import View
-from .forms import RideForm
+from .forms import RideForm, TotalCarForm
 from .models import Ride
 from django.contrib import messages
+from total import GrossCar
 
 
-class ShiftAPI(View):
+class CarShift(View):
     def get(self, request):
-        return render(request, '', {'form': 'sss'})
+        form = TotalCarForm()
+        return render(request, 'total/totalcar.html', {'form': form})
+
+    def post(self, request):
+        form = TotalCarForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            shift, car = data['shift'], data['car']
+            shift = str(shift)
+            gross = GrossCar()
+            raw_result = gross.rides_day(shift)
+            result = gross.rides_day_car(shift, car)
+            return render(request, 'total/totalcar.html', {'result': result, 'form': form})
 
 
 def enter_ride(request):

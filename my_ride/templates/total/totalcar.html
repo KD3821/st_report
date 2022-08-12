@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %} Машина всего {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 mx-auto mb-3">
+        <form method="POST">
+            <div class="mb-3">
+                {% csrf_token %}
+                {{ form.as_p}}
+            </div>
+            <button type="submit" class="btn btn-info">Всего за день</button>
+        </form>
+        <hr>
+        <h3>Машина всего за смену</h3>
+        <table class="table">
+            <tr>
+                <th>Заказ: </th>
+                <th>Сумма: </th>
+                <th>Водитель: </th>
+                <th>Автомобиль: </th>
+                <th>Наличные: </th>
+            </tr>
+
+            {% for obj in result %}
+
+            <tr >
+                <td>{{ obj.number }}:</td>
+                <td>{{ obj.price }}</td>
+                <td>{{ obj.driver }}</td>
+                <td>{{ obj.car }}</td>
+                <td>{{ obj.cash }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="col-md-8 mx-auto">
+        <a href="{% url 'new_ride'%}">Добавить еще заказ</a>
+    </div>
+</div>
+
+{% endblock %}
