@@ -1,7 +1,13 @@
 from django.shortcuts import render
+from django.views import View
 from .forms import RideForm
 from .models import Ride
 from django.contrib import messages
+
+
+class ShiftAPI(View):
+    def get(self, request):
+        return render(request, '', {'form': 'sss'})
 
 
 def enter_ride(request):
@@ -26,4 +32,9 @@ def enter_ride(request):
 
 def show_rides(request):
     rides = Ride.objects.all()
+    for ride in rides:
+        if ride.cash == False:
+            ride.cash = '---'
+        else:
+            ride.cash = ride.price
     return render(request, 'ride_list.html', {'rides': rides})
