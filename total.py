@@ -11,3 +11,9 @@ class GrossCar:
         get_rides = self.rides_day(shift)
         qs2 = get_rides.filter(car__plate=car)
         return qs2
+
+
+class GrossDriver:
+    def rides_week(self, name):
+        qs = Ride.objects.filter(driver__name=name)
+        return qs

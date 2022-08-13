@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.views import View
-from .forms import RideForm, TotalCarForm
+from .forms import RideForm, TotalCarForm, TotalDriverForm
 from .models import Ride
 from django.contrib import messages
-from total import GrossCar
+from total import GrossCar, GrossDriver
 
 
 def enter_ride(request):
@@ -28,17 +28,29 @@ def enter_ride(request):
 
 
 def show_rides(request):
-    rides = Ride.objects.all()
+    rides = Ride.objects.all() # to make filter by shift
     for ride in rides:
         if ride.cash == False:
             ride.cash = '---'
         else:
             ride.cash = ride.price
+        if ride.save_tax == False:
+            ride.save_tax = '---'
+        else:
+            ride.save_tax = round((ride.price * 25.7/100), 2)
+        if ride.extra_tax == False:
+            ride.extra_tax = '---'
+        else:
+            ride.extra_tax = round((ride.price * 6/100), 2)
+        if ride.toll == 0:
+            ride.toll = '---'
     return render(request, 'ride_list.html', {'rides': rides})
+
 
 def show_detail(request, number):
     ride = Ride.objects.get(number=number)
     return render(request, 'ride_detail.html', {'ride': ride})
+
 
 def edit_ride(request, number):
     ride = Ride.objects.get(number=number)
@@ -73,11 +85,11 @@ def edit_ride(request, number):
 
 
 class CarShift(View):
-    def get(self, request):
+    def get(self, request, car):
         form = TotalCarForm()
         return render(request, 'total/totalcar.html', {'form': form})
 
-    def post(self, request):
+    def post(self, request, car):
         form = TotalCarForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
@@ -87,3 +99,17 @@ class CarShift(View):
             # raw_result = gross.rides_day(shift)
             result = gross.rides_day_car(shift, car)
             return render(request, 'total/totalcar.html', {'result': result, 'form': form})
+
+class DriverWeek(View):
+    def get(self, request, name):
+        form = TotalDriverForm(initial={'name': name})
+        return render(request, 'total/totaldriver.html', {'form': form})
+
+    def post(self, request, name):
+        form = TotalDriverForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            name = data['name']
+            gross = GrossDriver()
+            result = gross.rides_week(name)
+            return render(request, 'total/totaldriver.html', {'result': result, 'form': form})

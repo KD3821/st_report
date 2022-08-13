@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} Машина всего {% endblock %}
+{% block title %} Водитель всего {% endblock %}
 
 {% block content %}
 <div class="row">
@@ -10,13 +10,14 @@
                 {% csrf_token %}
                 {{ form }}
             </div>
-            <button type="submit" class="btn btn-info">Всего за день</button>
+            <button type="submit" class="btn btn-info">Поездки за неделю</button>
         </form>
         <hr>
         {% if result %}
-        <h3>Машина всего за смену</h3>
+        <h3>Водитель всего за неделю</h3>
         <table class="table">
             <tr>
+                <th>Смена: </th>
                 <th>Заказ: </th>
                 <th>Сумма: </th>
                 <th>Водитель: </th>
@@ -25,6 +26,7 @@
             </tr>
             {% for obj in result %}
             <tr >
+                <td>{{ obj.shift }}:</td>
                 <td>{{ obj.number }}:</td>
                 <td>{{ obj.price }}</td>
                 <td>{{ obj.driver }}</td>

@@ -42,6 +42,7 @@ class Ride(models.Model):
     car = ForeignKey(Car, on_delete=models.CASCADE)
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
     price = IntegerField(default=0)
+    tip = IntegerField(default=0)
     cash = BooleanField(default=False)
     toll = IntegerField(default=0)
     save_tax = BooleanField(default=False)

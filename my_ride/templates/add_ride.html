@@ -7,18 +7,18 @@
 <div class="row">
     <div class="col-md-8 mx-auto">
         <h3>Добавление нового заказа:</h3>
-        <form method="POST" action="">
+        <form method="POST" action="" class="row g-3">
             <div class="mb-3">
                 {% csrf_token %}
                 {{ form.as_p }}
             </div>
-            <button type="submit" class="btn btn-info">Сохранить</button>
+            <button type="submit" class="btn btn-info col-md-1">Сохранить</button>
         </form>
     </div>
+
     <div class="col-md-8 mx-auto">
-        <br>
-        <a href="{% url 'rides_all'%}">Посмотреть все заказы</a><br>
-        <a href="{% url 'total_day_car'%}">Итого за смену</a><br>
+        <hr>
+        <a href="{% url 'rides_all'%}" role="button" class="btn btn-info">Посмотреть все заказы</a>
     </div>
 </div>
 

@@ -5,7 +5,7 @@
 {% block content %}
 
 <div class="row">
-    <div class="col-md-8 mx-auto">
+    <div class="col-md-7 mx-auto">
         <h3>Редактирование заказа {{ ride }}:</h3>
         <form method="POST" action="">
             <div class="mb-3">
@@ -15,10 +15,9 @@
             <button type="submit" class="btn btn-info">Сохранить</button>
         </form>
     </div>
-    <div class="col-md-8 mx-auto">
+    <div class="col-md-7 mx-auto">
         <br>
-        <a href="{% url 'rides_all'%}">Посмотреть все заказы</a><br>
-        <a href="{% url 'total_day_car'%}">Итого за смену</a><br>
+        <a href="{% url 'rides_all'%}" role="button" class="btn btn-info">Посмотреть все заказы</a>
     </div>
 </div>
 
