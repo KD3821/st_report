@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-10 mx-auto mb-3">
+    <div class="col-md-7 mx-auto mb-3">
         <form method="POST">
             <div class="mb-3">
                 {% csrf_token %}
@@ -22,9 +22,7 @@
                 <th>Автомобиль: </th>
                 <th>Наличные: </th>
             </tr>
-
             {% for obj in result %}
-
             <tr >
                 <td>{{ obj.number }}:</td>
                 <td>{{ obj.price }}</td>
@@ -36,7 +34,8 @@
         </table>
     </div>
     <div class="col-md-8 mx-auto">
-        <a href="{% url 'new_ride'%}">Добавить еще заказ</a>
+        <a href="{% url 'new_ride'%}">Добавить еще заказ</a><br>
+        <a href="{% url 'rides_all'%}">Посмотреть все заказы</a><br>
     </div>
 </div>
 

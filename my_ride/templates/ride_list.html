@@ -14,11 +14,9 @@
                 <th>Автомобиль: </th>
                 <th>Наличные: </th>
             </tr>
-
             {% for obj in rides %}
-
             <tr >
-                <td>{{ obj.number }}:</td>
+                <td><a href="{% url 'ride_detail' obj.number%}">{{ obj.number }}</a></td>
                 <td>{{ obj.price }}</td>
                 <td>{{ obj.driver }}</td>
                 <td>{{ obj.car }}</td>
@@ -28,7 +26,8 @@
         </table>
     </div>
     <div class="col-md-8 mx-auto">
-        <a href="{% url 'new_ride'%}">Добавить еще заказ</a>
+        <a href="{% url 'new_ride'%}">Добавить еще заказ</a><br>
+        <a href="{% url 'total_day_car'%}">Итого за смену</a><br>
     </div>
 </div>
 

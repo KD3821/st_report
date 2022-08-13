@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %} Добавить заказ {% endblock %}
+{% block title %} Изменить заказ {% endblock %}
 
 {% block content %}
 
 <div class="row">
     <div class="col-md-8 mx-auto">
-        <h3>Добавление нового заказа:</h3>
+        <h3>Редактирование заказа {{ ride }}:</h3>
         <form method="POST" action="">
             <div class="mb-3">
                 {% csrf_token %}

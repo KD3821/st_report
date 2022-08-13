@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %} Детали заказа {% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <h3>Детали заказа {{ ride }}:</h3>
+        <hr>
+        Сумма: {{ ride.price }}<br>
+        Водитель: {{ ride.driver }}<br>
+        Автомобиль: {{ ride.car }}<br>
+        <hr>
+    </div>
+    <div class="col-md-8 mx-auto">
+        <a href="{% url 'ride_change' ride.number %}">Корректировка заказа</a><br>
+        <a href="{% url 'new_ride' %}">Добавить еще заказ</a><br>
+        <a href="{% url 'rides_all' %}">Посмотреть все заказы</a><br>
+    </div>
+</div>
+
+{% endblock %}
