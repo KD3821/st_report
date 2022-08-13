@@ -7,6 +7,6 @@ urlpatterns = [
     path('list/', show_rides, name="rides_all"),
     path('totaldaycar/<str:car>/', CarShift.as_view(), name="total_day_car"),
     path('totalweekdriver/<str:name>/', DriverWeek.as_view(), name="total_week_driver"),
-    path('detail/<int:number>/', show_detail, name="ride_detail"),
-    path('edit/<int:number>/', edit_ride, name="ride_change"),
+    path('detail/<str:number>/', show_detail, name="ride_detail"),
+    path('edit/<str:number>/', edit_ride, name="ride_change"),
 ]

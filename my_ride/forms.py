@@ -4,7 +4,7 @@ from .models import Ride, Driver
 class RideForm(ModelForm):
     class Meta:
         model = Ride
-        fields = ['number', 'car', 'driver', 'shift', 'price', 'cash', 'toll', 'save_tax', 'extra_tax', 'comment']
+        fields = ['number', 'car', 'driver', 'shift', 'price', 'cash', 'toll', 'save_tax', 'extra_tax', 'tip', 'comment']
         widgets = {
             'comment': Textarea(attrs={'cols': 100, 'rows': 1}),
         }

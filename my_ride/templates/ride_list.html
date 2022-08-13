@@ -14,8 +14,10 @@
                 <th>Водитель: </th>
                 <th>Автомобиль: </th>
                 <th>Покупка смены: </th>
-                <th>ЗСД: </th>
                 <th>Доп.комиссия: </th>
+                <th>Режим: </th>
+                <th>ЗСД: </th>
+                <th>Чаевые: </th>
                 <th>Коммент: </th>
             </tr>
             {% for obj in rides %}
@@ -24,10 +26,12 @@
                 <td>{{ obj.price }}</td>
                 <td>{{ obj.cash }}</td>
                 <td><a href="{% url 'total_week_driver' obj.driver%}">{{ obj.driver }}</a></td>
-                <td><a href="{% url 'total_day_car' obj.car%}">{{ obj.car }}</td>
+                <td><a href="{% url 'total_day_car' obj.car%}">{{ obj.car }}</a></td>
                 <td>{{ obj.save_tax }}</td>
-                <td>{{ obj.toll }}</td>
+                <td>{{ obj.tax_result }}</td>
                 <td>{{ obj.extra_tax }}</td>
+                <td>{{ obj.toll }}</td>
+                <td>{{ obj.tip }}</td>
                 <td>{{ obj.comment }}</td>
             </tr>
             {% endfor %}

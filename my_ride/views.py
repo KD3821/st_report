@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.views import View
 from .forms import RideForm, TotalCarForm, TotalDriverForm
-from .models import Ride
+from .models import Ride, ExtraTax
 from django.contrib import messages
-from total import GrossCar, GrossDriver
+from total import GrossCar, GrossDriver, SaveTax, TaxRide
 
 
 def enter_ride(request):
@@ -12,14 +12,20 @@ def enter_ride(request):
     if form.is_valid():
         data = form.cleaned_data
         ride.number = data.get('number')
-        ride.car = data.get('car')
         ride.driver = data.get('driver')
+        ride.car = data.get('car')
         ride.shift = data.get('shift')
         ride.price = data.get('price')
+        ride.tip = data.get('tip')
         ride.cash = data.get('cash')
         ride.toll = data.get('toll')
         ride.save_tax = data.get('save_tax')
+        if ride.save_tax == True:
+            tax = SaveTax()
+            ride.saved_tax_result = tax.tax_saved(ride.number)
         ride.extra_tax = data.get('extra_tax')
+        calc_tax = TaxRide()
+        ride.tax_result = calc_tax.tax_used(ride.number, ride.extra_tax)
         ride.comment = data.get('comment')
         ride.save()
         messages.success(request, 'Поездка добавлена!')
@@ -37,13 +43,13 @@ def show_rides(request):
         if ride.save_tax == False:
             ride.save_tax = '---'
         else:
-            ride.save_tax = round((ride.price * 25.7/100), 2)
-        if ride.extra_tax == False:
-            ride.extra_tax = '---'
-        else:
-            ride.extra_tax = round((ride.price * 6/100), 2)
+            ride.save_tax = ride.saved_tax_result
+        if ride.tax_result == 0:
+            ride.tax_result = '---'
         if ride.toll == 0:
             ride.toll = '---'
+        if ride.tip == 0:
+            ride.tip = '---'
     return render(request, 'ride_list.html', {'rides': rides})
 
 
@@ -60,6 +66,7 @@ def edit_ride(request, number):
         'driver': ride.driver,
         'shift': ride.shift,
         'price': ride.price,
+        'tip': ride.tip,
         'cash': ride.cash,
         'toll': ride.toll,
         'save_tax': ride.save_tax,
@@ -69,14 +76,20 @@ def edit_ride(request, number):
     if form.is_valid():
         data = form.cleaned_data
         ride.number = data.get('number')
-        ride.car = data.get('car')
         ride.driver = data.get('driver')
+        ride.car = data.get('car')
         ride.shift = data.get('shift')
         ride.price = data.get('price')
+        ride.tip = data.get('tip')
         ride.cash = data.get('cash')
         ride.toll = data.get('toll')
         ride.save_tax = data.get('save_tax')
+        if ride.save_tax == True:
+            tax = SaveTax()
+            ride.saved_tax_result = tax.tax_saved(ride.number)
         ride.extra_tax = data.get('extra_tax')
+        calc_tax = TaxRide()
+        ride.tax_result = calc_tax.tax_used(ride.number, ride.extra_tax)
         ride.comment = data.get('comment')
         ride.save()
         messages.success(request, 'Поездка изменена!')
@@ -86,7 +99,7 @@ def edit_ride(request, number):
 
 class CarShift(View):
     def get(self, request, car):
-        form = TotalCarForm()
+        form = TotalCarForm(initial={'car': car})
         return render(request, 'total/totalcar.html', {'form': form})
 
     def post(self, request, car):
@@ -96,7 +109,6 @@ class CarShift(View):
             shift, car = data['shift'], data['car']
             shift = str(shift)
             gross = GrossCar()
-            # raw_result = gross.rides_day(shift)
             result = gross.rides_day_car(shift, car)
             return render(request, 'total/totalcar.html', {'result': result, 'form': form})
 
