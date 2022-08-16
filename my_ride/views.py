@@ -3,7 +3,7 @@ from django.views import View
 from .forms import RideForm, TotalCarForm, TotalDriverForm
 from .models import Ride, ExtraTax
 from django.contrib import messages
-from total import GrossCar, GrossDriver, SaveTax, TaxRide
+from total import GrossDay, GrossWeek, SaveTax, TaxRide
 
 
 def enter_ride(request):
@@ -108,7 +108,7 @@ class CarShift(View):
             data = form.cleaned_data
             shift, car = data['shift'], data['car']
             shift = str(shift)
-            gross = GrossCar()
+            gross = GrossDay()
             result = gross.rides_day_car(shift, car)
             return render(request, 'total/totalcar.html', {'result': result, 'form': form})
 
@@ -122,6 +122,6 @@ class DriverWeek(View):
         if form.is_valid():
             data = form.cleaned_data
             name = data['name']
-            gross = GrossDriver()
-            result = gross.rides_week(name)
+            gross = GrossWeek()
+            result = gross.rides_week_driver(name)
             return render(request, 'total/totaldriver.html', {'result': result, 'form': form})
