@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %} Всего за ДЕНЬ {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-7 mx-auto mb-3">
+        <form action="{% url 'total_day_driver' name %}" method="POST">
+            <div class="mb-3">
+                {% csrf_token %}
+                {{ form1 }}
+            </div>
+            <button type="submit" class="btn btn-info">Водитель за день</button>
+        </form>
+        <hr>
+        <form action="{% url 'total_week_driver' name %}" method="POST">
+            <div class="mb-3">
+                {% csrf_token %}
+                {{ form2 }}
+            </div>
+            <button type="submit" class="btn btn-info">Водитель за неделю</button>
+        </form>
+    </div>
+    <div class="col-md-7 mx-auto">
+        <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить еще заказ</a>
+        <a href="{% url 'rides_all'%}" role="button" class="btn btn-info">Посмотреть все заказы</a>
+    </div>
+</div>
+
+{% endblock %}

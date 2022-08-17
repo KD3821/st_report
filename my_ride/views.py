@@ -1,9 +1,28 @@
 from django.shortcuts import render
 from django.views import View
-from .forms import RideForm, TotalCarForm, TotalDriverForm
-from .models import Ride, ExtraTax
+from .forms import RideForm, TotalDayDriverForm
+from .models import Ride, Week, Shift
 from django.contrib import messages
 from total import GrossDay, GrossWeek, SaveTax, TaxRide
+
+
+def prettify(rides):
+    for ride in rides:
+        if ride.cash == False:
+            ride.cash = '---'
+        else:
+            ride.cash = ride.price
+        if ride.save_tax == False:
+            ride.save_tax = '---'
+        else:
+            ride.save_tax = ride.saved_tax_result
+        if ride.tax_result == 0:
+            ride.tax_result = '--'
+        if ride.toll == 0:
+            ride.toll = '---'
+        if ride.tip == 0:
+            ride.tip = '---'
+    return rides
 
 
 def enter_ride(request):
@@ -22,40 +41,15 @@ def enter_ride(request):
         ride.save_tax = data.get('save_tax')
         if ride.save_tax == True:
             tax = SaveTax()
-            ride.saved_tax_result = tax.tax_saved(ride.number)
+            ride.saved_tax_result = tax.tax_saved(ride.price)
         ride.extra_tax = data.get('extra_tax')
         calc_tax = TaxRide()
-        ride.tax_result = calc_tax.tax_used(ride.number, ride.extra_tax)
+        ride.tax_result = calc_tax.tax_used(ride.price, ride.extra_tax)
         ride.comment = data.get('comment')
         ride.save()
         messages.success(request, 'Поездка добавлена!')
         return render(request, 'ride_done.html', {'ride': ride})
     return render(request, 'add_ride.html', {'form': form})
-
-
-def show_rides(request):
-    rides = Ride.objects.all() # to make filter by shift
-    for ride in rides:
-        if ride.cash == False:
-            ride.cash = '---'
-        else:
-            ride.cash = ride.price
-        if ride.save_tax == False:
-            ride.save_tax = '---'
-        else:
-            ride.save_tax = ride.saved_tax_result
-        if ride.tax_result == 0:
-            ride.tax_result = '---'
-        if ride.toll == 0:
-            ride.toll = '---'
-        if ride.tip == 0:
-            ride.tip = '---'
-    return render(request, 'ride_list.html', {'rides': rides})
-
-
-def show_detail(request, number):
-    ride = Ride.objects.get(number=number)
-    return render(request, 'ride_detail.html', {'ride': ride})
 
 
 def edit_ride(request, number):
@@ -86,36 +80,89 @@ def edit_ride(request, number):
         ride.save_tax = data.get('save_tax')
         if ride.save_tax == True:
             tax = SaveTax()
-            ride.saved_tax_result = tax.tax_saved(ride.number)
+            ride.saved_tax_result = tax.tax_saved(ride.price)
         ride.extra_tax = data.get('extra_tax')
         calc_tax = TaxRide()
-        ride.tax_result = calc_tax.tax_used(ride.number, ride.extra_tax)
+        ride.tax_result = calc_tax.tax_used(ride.price, ride.extra_tax)
         ride.comment = data.get('comment')
         ride.save()
         messages.success(request, 'Поездка изменена!')
-        return render(request, 'ride_detail.html', {'ride': ride})
-    return render(request, 'ride_change.html', {'form': form, 'ride': ride})
+        return render(request, 'ride_done.html', {'ride': ride})
+    return render(request, 'change_ride.html', {'form': form, 'ride': ride})
 
 
-class CarShift(View):
-    def get(self, request, car):
-        form = TotalCarForm(initial={'car': car})
-        return render(request, 'total/totalcar.html', {'form': form})
+def show_rides(request):
+    rides = Ride.objects.all().order_by('shift', 'car') # to make filter by shift
+    rides = prettify(rides)
+    return render(request, 'ride_list.html', {'rides': rides})
 
-    def post(self, request, car):
-        form = TotalCarForm(request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            shift, car = data['shift'], data['car']
-            shift = str(shift)
-            gross = GrossDay()
-            result = gross.rides_day_car(shift, car)
-            return render(request, 'total/totalcar.html', {'result': result, 'form': form})
+
+def show_detail(request, number):
+    ride = Ride.objects.get(number=number)
+    return render(request, 'ride_detail.html', {'ride': ride})
+
+
+# def get_driver_day(request, name, shift):
+#     day = Shift.objects.get(date=shift)
+#     week = day.week
+#     week = week.week
+#     form = TotalDayDriverForm(week=week)
+#     qs = Ride.objects.filter(shift__date=shift)
+#     context = {'week': week, 'name': name, 'qs': qs}
+#     if request.method == 'POST':
+#         if form.is_valid():
+#             print('good')
+#             data = form.cleaned_data
+#             shift = data['shift']
+#             context['object_list'] = qs
+#             return render(request, 'total/totalday_driver.html', context)
+#         else:
+#             print('bad')
+#             return render(request, 'total/totalday_driver.html', {'form': form})
+#     else:
+#         form = TotalDayDriverForm(week=week)
+#         context['form'] = form
+#         return render(request, 'total/totalday_driver.html', context)
+
+
+
+class DriverDay(View):
+    def get(self, request, name, shift):
+        day = Shift.objects.get(date=shift)
+        week = day.week
+        week = week.week
+        qs = Ride.objects.filter(shift__date=shift)
+        rides = qs.filter(driver__name=name).order_by('number')
+        rides = prettify(rides)
+        form = TotalDayDriverForm(week=week)
+        return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'form': form })
+
+    def post(self, request, name, shift):
+        day = Shift.objects.get(date=shift)
+        week_d = day.week
+        week = week_d.week
+        if request.method == 'POST':
+            form = TotalDayDriverForm(request.POST or None, week)
+            print('form')
+            print(request)
+            if form.is_valid():
+                print('good')
+                data = form.cleaned_data
+                shift = data['shift']
+                shift = str(shift)
+                gross = GrossDay()
+                rides = gross.total_day_driver(shift, name)
+                rides = prettify(rides)
+                return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'form': form })
+            else:
+                print('bad')
+                return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'form': form })
 
 class DriverWeek(View):
-    def get(self, request, name):
+    def get(self, request, name, shift):
+
         form = TotalDriverForm(initial={'name': name})
-        return render(request, 'total/totaldriver.html', {'form': form})
+        return render(request, 'total/totalweek_driver.html', {'form': form})
 
     def post(self, request, name):
         form = TotalDriverForm(request.POST)
@@ -124,4 +171,30 @@ class DriverWeek(View):
             name = data['name']
             gross = GrossWeek()
             result = gross.rides_week_driver(name)
-            return render(request, 'total/totaldriver.html', {'result': result, 'form': form})
+            return render(request, 'total/total_driver.html', {'result': result, 'form': form, 'name': name})
+
+
+###########################
+
+
+class CarDay(View):
+    def get(self, request, car):
+        form = TotalCarForm(initial={'car': car})
+        return render(request, 'total/totalcar.html', {'form': form})
+
+    def post(self, request, car):
+        form = TotalCarForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            shift, car, driver = data['shift'], data['car'], data['driver']
+            shift = str(shift)
+            gross = GrossDay()
+            # result = gross.rides_day_car(shift, car)
+
+            result = gross.rides_day_driver(shift, car, driver)
+            return render(request, 'total/totalcar.html', {'result': result, 'form': form})
+
+
+class CarWeek(View):
+    def get(self, request, car, shift):
+        pass

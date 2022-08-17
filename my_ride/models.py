@@ -13,8 +13,13 @@ class Shift(models.Model):
     date = DateField()
     week = ForeignKey(Week, on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ['date']
+
     def __str__(self):
         return f'{self.date}'
+
+
 
 
 class Car(models.Model):
@@ -46,7 +51,7 @@ class ExtraTax(models.Model):
 
 
 class Ride(models.Model):
-    number = CharField(max_length=50)
+    number = CharField(max_length=50, unique=True)
     driver = ForeignKey(Driver, on_delete=models.CASCADE)
     car = ForeignKey(Car, on_delete=models.CASCADE)
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
