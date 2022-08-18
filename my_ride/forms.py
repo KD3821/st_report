@@ -14,17 +14,22 @@ class RideForm(ModelForm):
 class TotalDayDriverForm(ModelForm):
     class Meta:
         model = Ride
-        fields = ['shift']
+        fields = ('shift',)
 
-    # def __init__(self, request, *args, **kwargs):
-    #     self.week = kwargs.pop('week', None)
-    #     super().__init__(**kwargs)
-    #     self.fields['shift'].queryset = Shift.objects.filter(week__week=self.week)
-
-        # super().__init__(**kwargs)
-        # if week:
-        #     self.fields['shift'].queryset = Shift.objects.filter(week__week=week)
-
-    def __init__(self, request, week, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        week = kwargs.pop('week', None)
         super(TotalDayDriverForm, self).__init__(*args, **kwargs)
-        self.fields['shift'].queryset = Shift.objects.filter(week__week=week)
+        if week:
+            self.fields['shift'].queryset = Shift.objects.filter(week__week=week)
+
+
+class TotalDayCarForm(ModelForm):
+    class Meta:
+        model = Ride
+        fields = ('shift',)
+
+    def __init__(self, *args, **kwargs):
+        week = kwargs.pop('week', None)
+        super(TotalDayCarForm, self).__init__(*args, **kwargs)
+        if week:
+            self.fields['shift'].queryset = Shift.objects.filter(week__week=week)

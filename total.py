@@ -7,9 +7,9 @@ class GrossDay:
         qs = Ride.objects.filter(shift__date=shift)
         return qs
 
-    def rides_day_car(self, shift, car):
+    def total_day_car(self, shift, car):
         get_rides = self.rides_day(shift)
-        qs = get_rides.filter(car__plate=car)
+        qs = get_rides.filter(car__plate=car).order_by('number')
         return qs
 
     def total_day_driver(self, shift, name):
