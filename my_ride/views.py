@@ -137,7 +137,11 @@ class DriverDay(View):
 
 class CarDay(View):
     def get(self, request, car, shift):
+        # shift = str(shift)
+        # car = str(car)
+        print(shift, car)
         day = Shift.objects.get(date=shift)
+        print(day)
         week = day.week
         week = week.week
         qs = Ride.objects.filter(shift__date=shift)
@@ -146,7 +150,7 @@ class CarDay(View):
         print(rides)
         car_rides = prettify(rides)
         form = TotalDayCarForm(request.POST, week=week)
-        return render(request, 'total/totalday_car.html', {'rides': rides, 'car': car, 'shift': shift, 'week': week, 'form': form })
+        return render(request, 'total/totalday_car.html', {'rides': car_rides, 'car': car, 'shift': shift, 'week': week, 'form': form })
 
     def post(self, request, car, shift):
         day = Shift.objects.get(date=shift)
@@ -167,6 +171,11 @@ class CarDay(View):
 
 class DriverWeek(View):
     pass
+    # def get(self, request, name, week):
+    #     week_used = Week.objects.get(week=week)
+    #     qs = Ride.objects.filter(shift__date=shift)
+
+
     # def get(self, request, name, shift):
     #     form = TotalDriverForm(initial={'name': name})
     #     return render(request, 'total/totalweek_driver.html', {'form': form})
@@ -182,24 +191,6 @@ class DriverWeek(View):
 
 
 ###########################
-
-
-# class CarDay(View):
-#     def get(self, request, car):
-#         form = TotalCarForm(initial={'car': car})
-#         return render(request, 'total/totalcar.html', {'form': form})
-#
-#     def post(self, request, car):
-#         form = TotalCarForm(request.POST)
-#         if form.is_valid():
-#             data = form.cleaned_data
-#             shift, car, driver = data['shift'], data['car'], data['driver']
-#             shift = str(shift)
-#             gross = GrossDay()
-#             # result = gross.rides_day_car(shift, car)
-#
-#             result = gross.rides_day_driver(shift, car, driver)
-#             return render(request, 'total/totalcar.html', {'result': result, 'form': form})
 
 
 class CarWeek(View):
