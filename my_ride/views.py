@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views import View
-from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm
+from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm, TotalWeekDriverForm
 from .models import Ride, Week, Shift
 from django.contrib import messages
 from total import GrossDay, GrossWeek, SaveTax, TaxRide
@@ -170,10 +170,15 @@ class CarDay(View):
 
 
 class DriverWeek(View):
-    pass
-    # def get(self, request, name, week):
-    #     week_used = Week.objects.get(week=week)
-    #     qs = Ride.objects.filter(shift__date=shift)
+    def get(self, request, name, week):
+        # day = Shift.objects.get(date=shift)
+        # week = day.week
+        # week = week.week
+        qs = Ride.objects.filter(shift__week__week=week).filter(driver__name=name)
+        rides = qs.order_by('number')
+        rides = prettify(rides)
+        return render(request, 'total/totalweek_driver.html',
+                      {'rides': rides, 'name': name, 'week': week})
 
 
     # def get(self, request, name, shift):

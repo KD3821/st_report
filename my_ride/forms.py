@@ -33,3 +33,18 @@ class TotalDayCarForm(ModelForm):
         super(TotalDayCarForm, self).__init__(*args, **kwargs)
         if week:
             self.fields['shift'].queryset = Shift.objects.filter(week__week=week)
+
+
+class TotalWeekDriverForm(ModelForm):
+    class Meta:
+        model = Week
+        fields = ('week',)
+
+    # def __init__(self, *args, **kwargs):
+    #     driver = kwargs.pop('driver', None)
+    #     super(TotalWeekDriverForm, self).__init__(*args, **kwargs)
+    #     if driver:
+    #         qs = Ride.objects.filter(driver__name=driver).select_related('shift__week')
+    #
+    #
+    #         self.fields['week'].queryset = Week.objects.filter(week=week)

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %} Заказы водителя за неделю {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto mb-5">
+        <h3>Неделя [{{ week }}] для [ {{ name }} ]:</h3>
+        <h3>Выбрать другую неделю для [ {{ name }} ]:</h3>
+        <form method="POST" action="" class="row g-3">
+            <div class="mb-1">
+                {% csrf_token %}
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-info col-md-2">Выбрать</button>
+        </form>
+    </div>
+    <div class="col-md-10 mx-auto mb-3">
+        <h3>Заказы [{{ name }}] за [{{ week }}]:</h3>
+        <table class="table">
+            <tr>
+                <th>Неделя</th>
+                <th>Дата</th>
+                <th>Заказ: </th>
+                <th>Сумма: </th>
+                <th>Наличные: </th>
+                <th>Водитель: </th>
+                <th>Автомобиль: </th>
+                <th>Покупка смены: </th>
+                <th>Доп.комиссия: </th>
+                <th>Режим: </th>
+                <th>ЗСД: </th>
+                <th>Чаевые: </th>
+                <th>Коммент: </th>
+            </tr>
+            {% for obj in rides %}
+            <tr >
+                <td><a href="#" >{{ obj.shift.week }}</a></td>
+                <td><a href="#" >{{ obj.shift }}</a></td>
+                <td><a href="{% url 'ride_detail' obj.number%}">{{ obj.number }}</a></td>
+                <td>{{ obj.price }}</td>
+                <td>{{ obj.cash }}</td>
+                <td>{{ obj.driver }}</td>
+                <td>{{ obj.car }}</td>
+                <td>{{ obj.save_tax }}</td>
+                <td>-{{ obj.tax_result }}</td>
+                <td>{{ obj.extra_tax }}</td>
+                <td>{{ obj.toll }}</td>
+                <td>{{ obj.tip }}</td>
+                <td>{{ obj.comment }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="col-md-8 mx-auto">
+        <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить еще заказ</a>
+        <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
+    </div>
+</div>
+
+{% endblock %}

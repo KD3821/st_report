@@ -32,7 +32,7 @@
                 <td>{{ obj.price }}</td>
                 <td>{{ obj.cash }}</td>
                 <td>{{ obj.driver }}</td>
-                <td><a href="{% url 'total_day_driver' obj.driver obj.shift %}">День</a>&nbsp|&nbsp<a href="{% url 'total_week_driver' obj.driver obj.shift %}">Нед.</a></td>
+                <td><a href="{% url 'total_day_driver' obj.driver obj.shift %}">День</a>&nbsp|&nbsp<a href="{% url 'total_week_driver' obj.driver obj.shift.week %}">Нед.</a></td>
                 <td>{{ obj.car }}</td>
                 <td><a href="{% url 'total_day_car' obj.car obj.shift %}">День</a>&nbsp|&nbsp<a href="{% url 'total_week_car' obj.car obj.shift %}">Нед.</a></td>
                 <td>{{ obj.save_tax }}</td>
