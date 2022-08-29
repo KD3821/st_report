@@ -1,11 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %} Все заказы {% endblock %}
+{% block title %} Заказы машины за неделю {% endblock %}
 
 {% block content %}
 <div class="row">
+    <div class="col-md-8 mx-auto mb-5">
+        <h3>Неделя [{{ week }}] для [ {{ car }} ]:</h3>
+        <h3>Выбрать другую неделю для [ {{ car }} ]:</h3>
+        {% for obj in weeks %}
+            <span><a href="{% url 'total_week_car' car obj %}">{{ obj }}</a>&nbsp|&nbsp</span>
+        {% endfor %}
+    </div>
     <div class="col-md-10 mx-auto mb-3">
-        <h3>Все заказы:</h3>
+        <h3>Заказы [{{ car }}] за [{{ week }}]:</h3>
         <table class="table">
             <tr>
                 <th>Неделя</th>
@@ -14,9 +21,7 @@
                 <th>Сумма: </th>
                 <th>Наличные: </th>
                 <th>Водитель: </th>
-                <th>Вод.Стат:</th>
                 <th>Автомобиль: </th>
-                <th>A/M Стат:</th>
                 <th>Покупка смены: </th>
                 <th>Доп.комиссия: </th>
                 <th>Режим: </th>
@@ -26,15 +31,13 @@
             </tr>
             {% for obj in rides %}
             <tr >
-                <td>{{ obj.shift.week }}</td>
-                <td>{{ obj.shift }}</td>
+                <td><a href="#" >{{ obj.shift.week }}</a></td>
+                <td><a href="#" >{{ obj.shift }}</a></td>
                 <td><a href="{% url 'ride_detail' obj.number%}">{{ obj.number }}</a></td>
                 <td>{{ obj.price }}</td>
                 <td>{{ obj.cash }}</td>
                 <td>{{ obj.driver }}</td>
-                <td><a href="{% url 'total_day_driver' obj.driver obj.shift %}">День</a>&nbsp|&nbsp<a href="{% url 'total_week_driver' obj.driver obj.shift.week %}">Нед.</a></td>
                 <td>{{ obj.car }}</td>
-                <td><a href="{% url 'total_day_car' obj.car obj.shift %}">День</a>&nbsp|&nbsp<a href="{% url 'total_week_car' obj.car obj.shift.week %}">Нед.</a></td>
                 <td>{{ obj.save_tax }}</td>
                 <td>-{{ obj.tax_result }}</td>
                 <td>{{ obj.extra_tax }}</td>
@@ -47,6 +50,7 @@
     </div>
     <div class="col-md-8 mx-auto">
         <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить еще заказ</a>
+        <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
     </div>
 </div>
 

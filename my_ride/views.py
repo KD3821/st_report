@@ -171,34 +171,34 @@ class CarDay(View):
 
 class DriverWeek(View):
     def get(self, request, name, week):
-        # day = Shift.objects.get(date=shift)
-        # week = day.week
-        # week = week.week
-        qs = Ride.objects.filter(shift__week__week=week).filter(driver__name=name)
-        rides = qs.order_by('number')
+        qs = Ride.objects.filter(driver__name=name).select_related('shift__week')
+        weeks = []
+        for i in qs:
+            myweek = i.shift.week.week
+            if myweek in weeks:
+                pass
+            else:
+                weeks.append(myweek)
+        weeks.sort()
+        rides = qs.filter(shift__week__week=week).order_by('number')
         rides = prettify(rides)
         return render(request, 'total/totalweek_driver.html',
-                      {'rides': rides, 'name': name, 'week': week})
+                      {'rides': rides, 'name': name, 'week': week, 'weeks': weeks})
 
-
-    # def get(self, request, name, shift):
-    #     form = TotalDriverForm(initial={'name': name})
-    #     return render(request, 'total/totalweek_driver.html', {'form': form})
-    #
-    # def post(self, request, name):
-    #     form = TotalDriverForm(request.POST)
-    #     if form.is_valid():
-    #         data = form.cleaned_data
-    #         name = data['name']
-    #         gross = GrossWeek()
-    #         result = gross.rides_week_driver(name)
-    #         return render(request, 'total/total_driver.html', {'result': result, 'form': form, 'name': name})
-
-
-###########################
 
 
 class CarWeek(View):
-    pass
-#     def get(self, request, car, shift):
-#         pass
+    def get(self, request, car, week):
+        qs = Ride.objects.filter(car__plate=car).select_related('shift__week')
+        weeks = []
+        for i in qs:
+            myweek = i.shift.week.week
+            if myweek in weeks:
+                pass
+            else:
+                weeks.append(myweek)
+        weeks.sort()
+        rides = qs.filter(shift__week__week=week).order_by('number')
+        rides = prettify(rides)
+        return render(request, 'total/totalweek_car.html',
+                      {'rides': rides, 'car': car, 'week': week, 'weeks': weeks})

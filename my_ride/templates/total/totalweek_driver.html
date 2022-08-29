@@ -7,13 +7,9 @@
     <div class="col-md-8 mx-auto mb-5">
         <h3>Неделя [{{ week }}] для [ {{ name }} ]:</h3>
         <h3>Выбрать другую неделю для [ {{ name }} ]:</h3>
-        <form method="POST" action="" class="row g-3">
-            <div class="mb-1">
-                {% csrf_token %}
-                {{ form.as_p }}
-            </div>
-            <button type="submit" class="btn btn-info col-md-2">Выбрать</button>
-        </form>
+        {% for obj in weeks %}
+            <span><a href="{% url 'total_week_driver' name obj %}">{{ obj }}</a>&nbsp|&nbsp</span>
+        {% endfor %}
     </div>
     <div class="col-md-10 mx-auto mb-3">
         <h3>Заказы [{{ name }}] за [{{ week }}]:</h3>

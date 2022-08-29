@@ -10,5 +10,5 @@ urlpatterns = [
     path('totaldd/<str:name>/<str:shift>/', DriverDay.as_view(), name="total_day_driver"),
     path('totalwd/<str:name>/<str:week>/', DriverWeek.as_view(), name="total_week_driver"),
     path('totaldc/<str:car>/<str:shift>/', CarDay.as_view(), name="total_day_car"),
-    path('totalwc/<str:week>/<str:car>/', CarWeek.as_view(), name="total_week_car"),
+    path('totalwc/<str:car>/<str:week>/', CarWeek.as_view(), name="total_week_car"),
 ]
