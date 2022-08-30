@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.views import View
-from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm, TotalWeekDriverForm
-from .models import Ride, Week, Shift
+from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm, ReportDriverForm
+from .models import Ride, Week, Shift, BalanceDriver
 from django.contrib import messages
-from total import GrossDay, GrossWeek, SaveTax, TaxRide
+from total import GrossDay, SaveTax, TaxRide
+from accounting import DriverDayBalance
 
 
 def prettify(rides):
@@ -116,7 +117,8 @@ class DriverDay(View):
         rides = qs.filter(driver__name=name).order_by('number')
         rides = prettify(rides)
         form = TotalDayDriverForm(request.POST, week=week)
-        return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'form': form })
+        report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name) # to make empty queryset option
+        return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'form': form, 'report': report })
 
     def post(self, request, name, shift):
         day = Shift.objects.get(date=shift)
@@ -124,7 +126,6 @@ class DriverDay(View):
         week = week_d.week
         form = TotalDayDriverForm(request.POST, week=week)
         if form.is_valid():
-            print('good')
             data = form.cleaned_data
             shift = data['shift']
             shift = str(shift)
@@ -137,17 +138,11 @@ class DriverDay(View):
 
 class CarDay(View):
     def get(self, request, car, shift):
-        # shift = str(shift)
-        # car = str(car)
-        print(shift, car)
         day = Shift.objects.get(date=shift)
-        print(day)
         week = day.week
         week = week.week
         qs = Ride.objects.filter(shift__date=shift)
-        print(qs)
         rides = qs.filter(car__plate=car).order_by('number')
-        print(rides)
         car_rides = prettify(rides)
         form = TotalDayCarForm(request.POST, week=week)
         return render(request, 'total/totalday_car.html', {'rides': car_rides, 'car': car, 'shift': shift, 'week': week, 'form': form })
@@ -158,7 +153,6 @@ class CarDay(View):
         week = week_d.week
         form = TotalDayCarForm(request.POST, week=week)
         if form.is_valid():
-            print('good')
             data = form.cleaned_data
             shift = data['shift']
             shift = str(shift)
@@ -202,3 +196,31 @@ class CarWeek(View):
         rides = prettify(rides)
         return render(request, 'total/totalweek_car.html',
                       {'rides': rides, 'car': car, 'week': week, 'weeks': weeks})
+
+
+def add_report(request, shift):
+    balance_d = BalanceDriver()
+    form = ReportDriverForm(request.POST or None)
+    if form.is_valid():
+        data = form.cleaned_data
+        balance_d.day = data.get('day')
+        balance_d.driver = data.get('driver')
+        balance_d.car = data.get('car')
+        balance_d.miles_s = data.get('miles_s')
+        balance_d.miles_f = data.get('miles_f')
+        balance_d.hours = data.get('hours')
+        balance_d.priority = data.get('priority')
+        balance_d.wash = data.get('wash')
+        balance_d.water = data.get('water')
+        balance_d.other = data.get('other')
+        mybalance = DriverDayBalance()
+        mybalance.rides_result(balance_d.driver, shift)
+        balance_d.tolls = mybalance.tolls
+        balance_d.income = mybalance.income
+        balance_d.cash = mybalance.cash
+        balance_d.tips = mybalance.tips
+        balance_d.s_tax = mybalance.s_tax
+        balance_d.x_tax = mybalance.x_tax
+        balance_d.save()
+        return render(request, 'report_done.html', {'balance_d': balance_d})
+    return render(request, 'add_report.html', {'form': form})

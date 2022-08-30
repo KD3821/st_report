@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import enter_ride, show_rides, CarDay, DriverDay, show_detail, edit_ride, DriverWeek, CarWeek
+from .views import enter_ride, show_rides, CarDay, DriverDay, show_detail, edit_ride, DriverWeek, CarWeek, add_report
 
 urlpatterns = [
     path('add/', enter_ride, name="new_ride"),
@@ -11,4 +11,6 @@ urlpatterns = [
     path('totalwd/<str:name>/<str:week>/', DriverWeek.as_view(), name="total_week_driver"),
     path('totaldc/<str:car>/<str:shift>/', CarDay.as_view(), name="total_day_car"),
     path('totalwc/<str:car>/<str:week>/', CarWeek.as_view(), name="total_week_car"),
+    path('report/<str:shift>/', add_report, name="new_report"),
+    path('reported/', add_report, name="report_added"),
 ]

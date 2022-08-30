@@ -4,15 +4,17 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-8 mx-auto mb-5">
-        <h3>Неделя [{{ week }}] для [ {{ name }} ]:</h3>
+    <div class="col-md-5 mx-auto mb-5">
         <h3>Выбрать другую неделю для [ {{ name }} ]:</h3>
         {% for obj in weeks %}
             <span><a href="{% url 'total_week_driver' name obj %}">{{ obj }}</a>&nbsp|&nbsp</span>
         {% endfor %}
     </div>
+    <div class="col-md-5">
+        <h3>Финансовые показатели за неделю:</h3>
+    </div>
     <div class="col-md-10 mx-auto mb-3">
-        <h3>Заказы [{{ name }}] за [{{ week }}]:</h3>
+        <h3>Заказы [{{ name }}] за [{{ week }}] неделю:</h3>
         <table class="table">
             <tr>
                 <th>Неделя</th>
@@ -49,8 +51,9 @@
         </table>
     </div>
     <div class="col-md-8 mx-auto">
-        <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить еще заказ</a>
+        <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить заказ</a>
         <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
+        <a href="#" role="button" class="btn btn-info">Завершить смену</a>
     </div>
 </div>
 

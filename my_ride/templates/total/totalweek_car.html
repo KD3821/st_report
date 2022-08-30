@@ -5,14 +5,13 @@
 {% block content %}
 <div class="row">
     <div class="col-md-8 mx-auto mb-5">
-        <h3>Неделя [{{ week }}] для [ {{ car }} ]:</h3>
         <h3>Выбрать другую неделю для [ {{ car }} ]:</h3>
         {% for obj in weeks %}
             <span><a href="{% url 'total_week_car' car obj %}">{{ obj }}</a>&nbsp|&nbsp</span>
         {% endfor %}
     </div>
     <div class="col-md-10 mx-auto mb-3">
-        <h3>Заказы [{{ car }}] за [{{ week }}]:</h3>
+        <h3>Заказы [{{ car }}] за [{{ week }}] неделю:</h3>
         <table class="table">
             <tr>
                 <th>Неделя</th>
@@ -31,8 +30,8 @@
             </tr>
             {% for obj in rides %}
             <tr >
-                <td><a href="#" >{{ obj.shift.week }}</a></td>
-                <td><a href="#" >{{ obj.shift }}</a></td>
+                <td>{{ obj.shift.week }}</td>
+                <td>{{ obj.shift }}</td>
                 <td><a href="{% url 'ride_detail' obj.number%}">{{ obj.number }}</a></td>
                 <td>{{ obj.price }}</td>
                 <td>{{ obj.cash }}</td>
@@ -49,8 +48,9 @@
         </table>
     </div>
     <div class="col-md-8 mx-auto">
-        <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить еще заказ</a>
+        <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить заказ</a>
         <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
+        <a href="#" role="button" class="btn btn-info">Завершить смену</a>
     </div>
 </div>
 

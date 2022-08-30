@@ -9,6 +9,7 @@ class Week(models.Model):
         return f'{self.week}'
 
 
+
 class Shift(models.Model):
     date = DateField()
     week = ForeignKey(Week, on_delete=models.CASCADE)
@@ -30,6 +31,7 @@ class Car(models.Model):
         return self.plate
 
 
+
 class Driver(models.Model):
     name = CharField(max_length=200)
     salary = IntegerField(default=0)
@@ -42,12 +44,14 @@ class Driver(models.Model):
         return self.name
 
 
+
 class ExtraTax(models.Model):
     mode = CharField(max_length=100)
     tax = IntegerField(default=0)
 
     def __str__(self):
         return self.mode
+
 
 
 class Ride(models.Model):
@@ -69,6 +73,7 @@ class Ride(models.Model):
         return self.number
 
 
+
 class Balance(models.Model):
     day = ForeignKey(Shift, on_delete=models.CASCADE)
     car = ForeignKey(Car, on_delete=models.CASCADE)
@@ -86,3 +91,26 @@ class Balance(models.Model):
 
     def __str__(self):
         return f'{self.day} - {self.car}'
+
+
+class BalanceDriver(models.Model):
+    day = ForeignKey(Shift, on_delete=models.CASCADE)
+    driver = ForeignKey(Driver, on_delete=models.CASCADE)
+    car = ForeignKey(Car, on_delete=models.CASCADE)
+    miles_s = IntegerField(default=0)
+    miles_f = IntegerField(default=0)
+    hours = IntegerField(default=0)
+    priority = IntegerField(default=0)
+    wash = IntegerField(default=0)
+    water = IntegerField(default=0)
+    other = IntegerField(default=0)
+    tolls = IntegerField(default=0)
+    income = IntegerField(default=0)
+    cash = IntegerField(default=0)
+    tips = IntegerField(default=0)
+    s_tax = IntegerField(default=0)
+    x_tax = IntegerField(default=0)
+    comment = CharField(max_length=300, blank=True)
+
+    def __str__(self):
+        return f'{self.day} - {self.driver}'

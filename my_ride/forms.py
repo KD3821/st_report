@@ -1,5 +1,5 @@
 from django.forms import ModelForm, Form, Textarea
-from .models import Ride, Driver, Shift, Week
+from .models import Ride, Driver, Shift, Week, BalanceDriver
 
 
 class RideForm(ModelForm):
@@ -35,16 +35,10 @@ class TotalDayCarForm(ModelForm):
             self.fields['shift'].queryset = Shift.objects.filter(week__week=week)
 
 
-class TotalWeekDriverForm(ModelForm):
+class ReportDriverForm(ModelForm):
     class Meta:
-        model = Week
-        fields = ('week',)
-
-    # def __init__(self, *args, **kwargs):
-    #     driver = kwargs.pop('driver', None)
-    #     super(TotalWeekDriverForm, self).__init__(*args, **kwargs)
-    #     if driver:
-    #         qs = Ride.objects.filter(driver__name=driver).select_related('shift__week')
-    #
-    #
-    #         self.fields['week'].queryset = Week.objects.filter(week=week)
+        model = BalanceDriver
+        fields = ['day', 'driver', 'car', 'miles_s', 'miles_f', 'hours', 'priority', 'wash', 'water', 'other', 'comment']
+        widgets = {
+            'comment': Textarea(attrs={'cols': 100, 'rows': 1}),
+        }

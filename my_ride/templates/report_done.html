@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %} Отчет отправлен! {% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <h3>Отчет сохранен:</h3>
+        Дата: {{ balance_d.day }}<br>
+        Водитель: {{ balance_d.driver }}<br>
+        Автомобиль: {{ balance_d.car }}<br>
+        ЗСД: {{ balance_d.tolls }}<br>
+        Касса: {{ balance_d.income }}<br>
+        Наличные: {{ balance_d.cash }}<br>
+        Чаевые: {{ balance_d.tips }}<br>
+        Покупка смены: {{ balance_d.s_tax }}<br>
+        Доп.комиссия: {{ balance_d.x_tax }}<br>
+    </div>
+    <div class="col-md-8 mx-auto">
+        <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить еще заказ</a>
+        <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
+    </div>
+</div>
+
+{% endblock %}
