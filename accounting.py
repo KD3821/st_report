@@ -9,7 +9,7 @@ class DriverDayBalance:
     tips = IntegerField(default=0)
     s_tax = IntegerField(default=0)
     x_tax = IntegerField(default=0)
-    # mileage = IntegerField(default=0)
+    mileage = IntegerField(default=0)
 
     def rides_result(self, name, shift):
         qs = Ride.objects.filter(driver=name).select_related('shift__week')

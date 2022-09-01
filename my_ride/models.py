@@ -111,6 +111,7 @@ class BalanceDriver(models.Model):
     s_tax = IntegerField(default=0)
     x_tax = IntegerField(default=0)
     comment = CharField(max_length=300, blank=True)
+    mileage = IntegerField(default=0)
 
     def __str__(self):
         return f'{self.day} - {self.driver}'

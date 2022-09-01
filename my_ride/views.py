@@ -97,7 +97,7 @@ def edit_ride(request, number):
 def delete_ride(request, number):
     ride = Ride.objects.get(number=number)
     ride.delete()
-    rides = Ride.objects.all().order_by('shift', 'car')  # to make filter by shift
+    rides = Ride.objects.all().order_by('shift', 'car')
     rides = prettify(rides)
     return render(request, 'ride_list.html', {'rides': rides})
 
@@ -124,7 +124,7 @@ class DriverDay(View):
         rides = prettify(rides)
         form = TotalDayDriverForm(request.POST, week=week)
         try:
-            report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)# to make empty queryset option
+            report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)
         except BalanceDriver.DoesNotExist:
             report = None
         return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'form': form, 'report': report })
@@ -217,6 +217,7 @@ def add_report(request, shift):
         balance_d.car = data.get('car')
         balance_d.miles_s = data.get('miles_s')
         balance_d.miles_f = data.get('miles_f')
+        balance_d.mileage = balance_d.miles_f - balance_d.miles_s
         balance_d.hours = data.get('hours')
         balance_d.priority = data.get('priority')
         balance_d.wash = data.get('wash')
