@@ -141,7 +141,11 @@ class DriverDay(View):
             gross = GrossDay()
             rides = gross.total_day_driver(shift, name)
             rides = prettify(rides)
-            return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'form': form })
+            try:
+                report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)
+            except BalanceDriver.DoesNotExist:
+                report = None
+            return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'form': form, 'report': report })
 
 
 

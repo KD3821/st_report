@@ -4,17 +4,21 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-5 mx-auto mb-5">
-        <h3>Выбрать другой день недели [{{ week }}] для [ {{ name }} ]:</h3>
-        <form method="POST" action="" class="row g-3">
-            <div class="mb-1">
-                {% csrf_token %}
-                {{ form.as_p }}
+    <div class="col-md-5 mx-5 mb-5">
+        <div class="card">
+            <h3 class="card-header">Выбрать другой день недели [{{ week }}] для [ {{ name }} ]:</h3>
+            <div class="card-body">
+                <form method="POST" action="" class="row g-3">
+                    <div class="mb-1">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    </div>
+                    <button type="submit" class="btn btn-info col-md-2">Выбрать</button>
+                </form>
             </div>
-            <button type="submit" class="btn btn-info col-md-2">Выбрать</button>
-        </form>
+        </div>
     </div>
-    <div class="col-md-4 mx-auto">
+    <div class="col-md-4 ">
         <div class="card">
             <h3 class="card-header">Финансовые показатели за смену:</h3>
             <div class="card-body">
@@ -34,6 +38,10 @@
                      <tr>
                         <td>Чаевые</td>
                         <td>{{ report.tips }}</td>
+                    </tr>
+                    <tr>
+                        <td>Пробег за смену</td>
+                        <td>{{ report.mileage }}</td>
                     </tr>
                 </table>
             </div>
