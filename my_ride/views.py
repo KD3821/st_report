@@ -94,6 +94,13 @@ def edit_ride(request, number):
     return render(request, 'change_ride.html', {'form': form, 'ride': ride})
 
 
+def delete_ride(request, number):
+    ride = Ride.objects.get(number=number)
+    ride.delete()
+    rides = Ride.objects.all().order_by('shift', 'car')  # to make filter by shift
+    rides = prettify(rides)
+    return render(request, 'ride_list.html',{'rides': rides})
+
 
 def show_rides(request):
     rides = Ride.objects.all().order_by('shift', 'car') # to make filter by shift
@@ -117,7 +124,7 @@ class DriverDay(View):
         rides = qs.filter(driver__name=name).order_by('number')
         rides = prettify(rides)
         form = TotalDayDriverForm(request.POST, week=week)
-        report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name) # to make empty queryset option
+        report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)# to make empty queryset option
         return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'form': form, 'report': report })
 
     def post(self, request, name, shift):

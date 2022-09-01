@@ -14,26 +14,30 @@
             <button type="submit" class="btn btn-info col-md-2">Выбрать</button>
         </form>
     </div>
-    <div class="col-md-5">
-        <h3>Финансовые показатели за смену:</h3>
-        <table>
-             <tr>
-                <td>Касса</td>
-                <td>{{ report.income }}</td>
-            </tr>
-             <tr>
-                <td>Наличные</td>
-                <td>{{ report.cash }}</td>
-            </tr>
-             <tr>
-                <td>Покуп. смены</td>
-                <td>{{ report.s_tax }}</td>
-            </tr>
-             <tr>
-                <td>Чаевые</td>
-                <td>{{ report.tips }}</td>
-            </tr>
-        </table>
+    <div class="col-md-4 mx-auto">
+        <div class="card">
+            <h3 class="card-header">Финансовые показатели за смену:</h3>
+            <div class="card-body">
+                <table>
+                     <tr>
+                        <td>Касса</td>
+                        <td>{{ report.income }}</td>
+                    </tr>
+                     <tr>
+                        <td>Наличные</td>
+                        <td>{{ report.cash }}</td>
+                    </tr>
+                     <tr>
+                        <td>Покуп. смены</td>
+                        <td>{{ report.s_tax }}</td>
+                    </tr>
+                     <tr>
+                        <td>Чаевые</td>
+                        <td>{{ report.tips }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
     <div class="col-md-10 mx-auto mb-3">
         <h3>Заказы [{{ name }}] за [{{ shift }}]:</h3>
