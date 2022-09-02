@@ -113,6 +113,11 @@ def show_detail(request, number):
     return render(request, 'ride_detail.html', {'ride': ride})
 
 
+def show_reports(request):
+    reports = BalanceDriver.objects.all().order_by('day')
+    return render(request, 'report_list.html', {'reports': reports})
+
+
 
 class DriverDay(View):
     def get(self, request, name, shift):
