@@ -115,7 +115,7 @@ def show_detail(request, number):
 
 def show_reports(request):
     reports = BalanceDriver.objects.all().order_by('day')
-    return render(request, 'report_list.html', {'reports': reports})
+    return render(request, 'new_report_list.html', {'reports': reports})
 
 
 
