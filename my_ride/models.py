@@ -55,7 +55,7 @@ class ExtraTax(models.Model):
 
 
 class Ride(models.Model):
-    number = CharField(max_length=50, unique=True)
+    number = CharField(max_length=50)
     driver = ForeignKey(Driver, on_delete=models.CASCADE)
     car = ForeignKey(Car, on_delete=models.CASCADE)
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
@@ -93,6 +93,7 @@ class Balance(models.Model):
         return f'{self.day} - {self.car}'
 
 
+
 class BalanceDriver(models.Model):
     day = ForeignKey(Shift, on_delete=models.CASCADE)
     driver = ForeignKey(Driver, on_delete=models.CASCADE)
@@ -103,6 +104,7 @@ class BalanceDriver(models.Model):
     priority = IntegerField(default=0)
     wash = IntegerField(default=0)
     water = IntegerField(default=0)
+    fuel = IntegerField(default=0)
     other = IntegerField(default=0)
     tolls = IntegerField(default=0)
     income = IntegerField(default=0)
@@ -115,3 +117,20 @@ class BalanceDriver(models.Model):
 
     def __str__(self):
         return f'{self.day} - {self.driver}'
+
+
+
+class BalanceCar(models.Model):
+    c_day = ForeignKey(Shift, on_delete=models.CASCADE)
+    c_car = ForeignKey(Car, on_delete=models.CASCADE)
+    c_driver = ForeignKey(Driver, on_delete=models.CASCADE)
+    c_info = ForeignKey(BalanceDriver, on_delete=models.CASCADE)
+    c_fuel = IntegerField(default=0)
+    c_wash = IntegerField(default=0)
+    c_toll = IntegerField(default=0)
+    c_fine = IntegerField(default=0)
+    c_service = IntegerField(default=0)
+    c_repair = IntegerField(default=0)
+
+    def __str__(self):
+        return f'{self.c_car} - {self.c_day}'

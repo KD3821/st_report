@@ -5,11 +5,11 @@
 {% block content %}
 <div class="row">
     <div class="col-md-10 mx-auto mb-3">
-        <h3>Все отчеты:</h3>
+        <h3>Все отчеты за неделю:</h3>
         <table class="table">
             <tr >
             {% for obj in reports %}
-                <td><a href="{% url 'total_day_driver' obj.driver obj.day %}" role="button" class="btn btn-info">{{ obj.car }}</a></td>
+                <td><a href="{% url 'total_day_driver' obj.driver obj.day %}" role="button" class="btn btn-success">{{obj.day}}<br>{{ obj.car }}<br>{{ obj.driver }}</a></td>
             {% endfor %}
             </tr>
         </table>

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Отчеты за неделю{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 mx-auto mb-3">
+        <h3>Все отчеты за неделю {{ week }}:</h3>
+        <div>
+            {% for key, value in weekly_reports %}
+                {{ key }}
+                <div>
+                {% if value %}
+                    {% for i in value %}
+                    <a href="{% url 'total_day_driver' i.driver i.day %}" role="button" class="btn btn-success">{{ i.car }}<br>{{ i.driver }}</a>
+                    {% endfor %}
+                {% endif %}
+                </div>
+                <hr>
+
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-8 mx-auto">
+        <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить заказ</a>
+        <a href="#" role="button" class="btn btn-info">Завершить смену</a>
+        <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
+    </div>
+</div>
+
+{% endblock %}

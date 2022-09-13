@@ -4,23 +4,64 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-5 mx-5 mb-5">
+    <div class="col-md-3 offset-md-1 ">
         <div class="card">
-            <h3 class="card-header">Выбрать другой день недели [{{ week }}] для [ {{ name }} ]:</h3>
+            <h3 class="card-header">Выбрать другой день <span style="color: darkblue; text-decoration: underline">{{ week }}</span>-й недели для <span style="color: darkred; text-decoration: underline">{{ name }}</span>:</h3>
             <div class="card-body">
                 <form method="POST" action="" class="row g-3">
                     <div class="mb-1">
                         {% csrf_token %}
-                        {{ form.as_p }}
+                        {{ d_form.as_p }}
                     </div>
-                    <button type="submit" class="btn btn-info col-md-2">Выбрать</button>
+                    <button type="submit" class="btn btn-info col-md-5" name="driver_sub">Выбрать</button>
+                </form>
+            </div>
+        </div>
+        <div class="card">
+            <h3 class="card-header">Выбрать другой день <span style="color: darkblue; text-decoration: underline">{{ week }}</span>-й недели для <span style="color: darkgreen; text-decoration: underline">{{ car }}</span>:</h3>
+            <div class="card-body">
+                <form method="POST" action="" class="row g-3">
+                    <div class="mb-1">
+                        {% csrf_token %}
+                        {{ c_form.as_p }}
+                    </div>
+                    <button type="submit" class="btn btn-info col-md-5" name="car_sub">Выбрать</button>
                 </form>
             </div>
         </div>
     </div>
-    <div class="col-md-4 ">
+    <div class="col-md-3 ">
         <div class="card">
-            <h3 class="card-header">Финансовые показатели за смену:</h3>
+            <h3 class="card-header">Показатели <span style="color: darkred; text-decoration: underline">{{ name }}</span> за смену <span style="color: darkblue; text-decoration: underline">{{ shift }}</span>:</h3>
+            <div class="card-body">
+                <table>
+                     <tr>
+                        <td>Касса</td>
+                        <td>{{ report.income }}</td>
+                    </tr>
+                     <tr>
+                        <td>Наличные</td>
+                        <td>{{ report.cash }}</td>
+                    </tr>
+                     <tr>
+                        <td>Покуп. смены</td>
+                        <td>{{ report.s_tax }}</td>
+                    </tr>
+                     <tr>
+                        <td>Чаевые</td>
+                        <td>{{ report.tips }}</td>
+                    </tr>
+                    <tr>
+                        <td>Пробег за смену</td>
+                        <td>{{ report.mileage }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 ">
+        <div class="card">
+            <h3 class="card-header">Расходы <span style="color: darkgreen; text-decoration: underline">{{ car }}</span> за смену <span style="color: darkblue; text-decoration: underline">{{ shift }}</span>:</h3>
             <div class="card-body">
                 <table>
                      <tr>
@@ -48,7 +89,7 @@
         </div>
     </div>
     <div class="col-md-10 mx-auto mb-3">
-        <h3>Заказы [{{ name }}] за [{{ shift }}]:</h3>
+        <h3 style="text-align: center">Заказы <span style="color: darkred; text-decoration: underline">{{ name }}</span> за <span style="color: darkblue; text-decoration: underline">{{ shift }}</span>:</h3>
         <table class="table">
             <tr>
                 <th>Неделя</th>
@@ -85,9 +126,11 @@
         </table>
     </div>
     <div class="col-md-8 mx-auto">
-        <a href="{% url 'new_ride' %}" role="button" class="btn btn-info">Добавить заказ</a>
+        <a href="{% url 'new_ride' %}" role="button" class="btn btn-primary">Добавить заказ</a>
         <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
-        <a href="{% url 'new_report' shift %}" role="button" class="btn btn-info">Завершить смену</a>
+        <a href="{% url 'new_report' shift name %}" role="button" class="btn btn-success">Отправить отчет</a>
+        <a href="#" role="button" class="btn btn-warning">Изменить отчет</a>
+        <a href="{% url 'week_reports' week %}" role="button" class="btn btn-secondary">Отчеты за неделю</a>
     </div>
 </div>
 

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %} Все Недели {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 mx-auto mb-3">
+        <h3>Все недели:</h3>
+        <table class="table">
+            <tr >
+            {% for obj in weeks %}
+                <td><a href="{% url 'week_reports' obj.week %}" role="button" class="btn btn-success">{{obj.week}}</a></td>
+            {% endfor %}
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-8 mx-auto">
+        <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить заказ</a>
+        <a href="#" role="button" class="btn btn-info">Завершить смену</a>
+        <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
+    </div>
+</div>
+
+{% endblock %}
