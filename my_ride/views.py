@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponseRedirect
 from django.views import View
 from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm, ReportDriverForm
 from .models import Ride, Week, Shift, BalanceDriver, Driver, Car
 from django.contrib import messages
 from total import GrossDay, SaveTax, TaxRide
 from accounting import DriverDayBalance
+from django.urls import reverse
 
 
 def prettify(rides):
@@ -140,8 +141,11 @@ class DriverDay(View):
         week = week.week
         qs = Ride.objects.filter(shift__date=shift)
         rides = qs.filter(driver__name=name).order_by('number')
-        get_car = rides[0]
-        car = get_car.car
+        if rides:
+            get_car = rides[0]
+            car = get_car.car
+        else:
+            car = '-----'
         rides = prettify(rides)
         d_form = TotalDayDriverForm(request.POST, week=week)
         c_form = TotalDayCarForm(request.POST, week=week)
@@ -156,8 +160,11 @@ class DriverDay(View):
         week_d = day.week
         week = week_d.week
         qs = Ride.objects.filter(shift__date=shift).filter(driver__name=name)
-        get_car = qs[0]
-        car = get_car.car
+        if qs:
+            get_car = qs[0]
+            car = get_car.car
+        else:
+            car = '-----'
         d_form = TotalDayDriverForm(request.POST, week=week)
         c_form = TotalDayCarForm(request.POST, week=week)
         if 'driver_sub' in request.POST:
@@ -173,7 +180,8 @@ class DriverDay(View):
                     report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)
                 except BalanceDriver.DoesNotExist:
                     report = None
-                return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'd_form': d_form, 'c_form': c_form, 'car': car, 'report': report })
+                return HttpResponseRedirect(reverse('total_day_driver', args=[name, shift]))
+                # return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'd_form': d_form, 'c_form': c_form, 'car': car, 'report': report })
         elif 'car_sub' in request.POST:
             if c_form.is_valid():
                 data = c_form.cleaned_data
@@ -192,7 +200,8 @@ class DriverDay(View):
                     report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)
                 except BalanceDriver.DoesNotExist:
                     report = None
-                return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'd_form': d_form, 'c_form': c_form, 'car': car, 'report': report })
+                return HttpResponseRedirect(reverse('total_day_driver', args=[name, shift]))
+                # return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'd_form': d_form, 'c_form': c_form, 'car': car, 'report': report })
 
 
 class CarDay(View):
