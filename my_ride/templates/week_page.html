@@ -12,7 +12,7 @@
                 <div>
                 {% if value %}
                     {% for i in value %}
-                    <a href="{% url 'total_day_driver' i.driver i.day %}" role="button" class="btn btn-success">{{ i.car }}<br>{{ i.driver }}</a>
+                    <a href="{% url 'total_day_driver' i.driver i.day %}" role="button" class="btn btn-success">{{ i.car }}<br>{{ i.driver }}<br>{{ i.income }}</a>
                     {% endfor %}
                 {% endif %}
                 </div>
@@ -23,7 +23,7 @@
     </div>
     <div class="col-md-8 mx-auto">
         <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить заказ</a>
-        <a href="#" role="button" class="btn btn-info">Завершить смену</a>
+        <a href="{% url 'start'%}" role="button" class="btn btn-info">Все недели</a>
         <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
     </div>
 </div>

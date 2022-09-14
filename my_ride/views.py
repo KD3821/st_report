@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm, ReportDriverForm
-from .models import Ride, Week, Shift, BalanceDriver, Driver
+from .models import Ride, Week, Shift, BalanceDriver, Driver, Car
 from django.contrib import messages
 from total import GrossDay, SaveTax, TaxRide
 from accounting import DriverDayBalance
@@ -128,7 +128,7 @@ def show_week_reports(request, week):
 
 
 def show_weeks(request):
-    weeks = Week.objects.all()
+    weeks = Week.objects.all().order_by('week')
     return render(request, 'start_page.html', {'weeks': weeks})
 
 
@@ -139,9 +139,9 @@ class DriverDay(View):
         week = day.week
         week = week.week
         qs = Ride.objects.filter(shift__date=shift)
-        get_car = qs[0]
-        car = get_car.car
         rides = qs.filter(driver__name=name).order_by('number')
+        get_car = rides[0]
+        car = get_car.car
         rides = prettify(rides)
         d_form = TotalDayDriverForm(request.POST, week=week)
         c_form = TotalDayCarForm(request.POST, week=week)
@@ -168,7 +168,7 @@ class DriverDay(View):
                 gross = GrossDay()
                 rides = gross.total_day_driver(shift, name)
                 rides = prettify(rides)
-                print('df')
+                print(name)
                 try:
                     report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)
                 except BalanceDriver.DoesNotExist:
@@ -181,10 +181,13 @@ class DriverDay(View):
                 shift = str(shift)
                 gross = GrossDay()
                 rides = gross.total_day_car(shift, car)
-                get_name=rides[0]
-                name = get_name.driver
+                if rides:
+                    get_name = rides[0]
+                    name = get_name.driver
+                else:
+                    name = '-----'
                 rides = prettify(rides)
-                print('cf')
+                print(name)
                 try:
                     report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)
                 except BalanceDriver.DoesNotExist:
@@ -257,7 +260,11 @@ class CarWeek(View):
 def add_report(request, shift, name):
     balance_d = BalanceDriver()
     day = Shift.objects.get(date=shift)
-    driver = Driver.objects.get(name=name)
+    try:
+        driver = Driver.objects.get(name=name)
+    except Driver.DoesNotExist:
+        driver = None
+        return render(request, '404.html')
     form = ReportDriverForm(request.POST or None, initial={
         'day': day,
         'driver': driver
@@ -286,3 +293,6 @@ def add_report(request, shift, name):
         balance_d.save()
         return render(request, 'report_done.html', {'balance_d': balance_d})
     return render(request, 'add_report.html', {'form': form})
+
+
+# def edit_report(request, shift, name):
