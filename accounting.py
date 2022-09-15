@@ -54,10 +54,40 @@ class DriverWeekBalance:
         self.wash = 0
         self.water = 0
         self.other = 0
+        self.hours = 0
+        self.mileage = 0
         days = Shift.objects.filter(week__week=week)
         dayres_list = []
         for day in days:
             dayres = BalanceDriver.objects.filter(day=day).filter(driver=name)
             if dayres:
                 dayres_list.append(dayres)
-        print(dayres_list)
+        for i in dayres_list:
+            b = i[0]
+            if b.income >= 1000:
+                self.salary += (b.income / 100) * 35
+            else:
+                self.salary += (b.income / 100) * 30
+            self.tips += b.tips
+            self.saved_tax += b.s_tax
+            self.extra_tax += b.x_tax
+            self.cash += b.cash
+            self.tolls += b.tolls
+            self.wash += b.wash
+            self.water += b.water
+            self.other += b.other
+            self.hours += b.hours
+            self.mileage += b.mileage
+        return {
+            'salary': self.salary,
+            'tips': self.tips,
+            'saved_tax': self.saved_tax,
+            'extra_tax': self.extra_tax,
+            'cash': self.cash,
+            'tolls': self.tolls,
+            'wash': self.wash,
+            'water': self.water,
+            'other': self.other,
+            'hours': self.hours,
+            'mileage': self.mileage
+        }

@@ -113,11 +113,6 @@ def show_detail(request, number):
     return render(request, 'ride_detail.html', {'ride': ride})
 
 
-def show_reports(request):
-    reports = BalanceDriver.objects.all().order_by('day')
-    return render(request, 'new_report_list.html', {'reports': reports})
-
-
 def show_week_reports(request, week):
     days = Shift.objects.filter(week__week=week)
     form = SelectDriverForm(request.POST)
@@ -131,9 +126,36 @@ def show_week_reports(request, week):
         for i in days:
             week_reports = BalanceDriver.objects.filter(day=i).filter(driver__name=driver)
             weekly_reports[i] = week_reports
-        test_calc = DriverWeekBalance()
-        test_calc.week_result(driver, week)
-        return render(request, 'week_page.html', {'week': week, 'weekly_reports': weekly_reports.items(), 'form': form})
+        week_calc = DriverWeekBalance()
+        week_calc.week_result(driver, week)
+        salary = week_calc.salary
+        tips = week_calc.tips
+        saved_tax = week_calc.saved_tax
+        extra_tax = week_calc.extra_tax
+        cash = week_calc.cash
+        tolls = week_calc.tolls
+        wash = week_calc.wash
+        water = week_calc.water
+        other = week_calc.other
+        hours = week_calc.hours
+        mileage = week_calc.mileage
+        return render(request, 'week_page.html', {
+            'week': week,
+            'weekly_reports': weekly_reports.items(),
+            'form': form,
+            'driver': driver,
+            'salary': salary,
+            'tips': tips,
+            'saved_tax': saved_tax,
+            'extra_tax': extra_tax,
+            'cash': cash,
+            'tolls': tolls,
+            'wash': wash,
+            'water': water,
+            'other': other,
+            'hours': hours,
+            'mileage': mileage
+        })
     return render(request, 'week_page.html', {'week': week, 'weekly_reports': weekly_reports.items(), 'form': form})
 
 
@@ -315,7 +337,10 @@ def add_report(request, shift, name):
 
 
 def edit_report(request, shift, name):
-    report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)
+    try:
+        report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)
+    except BalanceDriver.DoesNotExist:
+        return render(request, '404.html')
     form = ReportDriverForm(request.POST or None, initial={
         'day': report.day,
         'driver': report.driver,
@@ -358,3 +383,5 @@ def edit_report(request, shift, name):
         report.save()
         return render(request, 'report_done.html', {'balance_d': report})
     return render(request, 'add_report.html', {'form': form})
+
+

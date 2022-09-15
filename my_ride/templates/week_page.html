@@ -23,32 +23,56 @@
     </div>
     <div class="col-md-3">
         <div class="card">
-            <h3 class="card-header">Показатели <span style="color: darkred; text-decoration: underline">{{ name }}</span> за смену <span style="color: darkblue; text-decoration: underline">{{ shift }}</span>:</h3>
+            <h3 class="card-header">Показатели за неделю <span style="color: darkblue; text-decoration: underline">{{ shift }}</span>:</h3>
             <div class="card-body">
                 <table>
+                    <tr>
+                        <td>Водитель</td>
+                        <td><span style="color: darkred; text-decoration: underline">{{ driver }}</span> </td>
+                    </tr>
                      <tr>
-                        <td>Касса</td>
-                        <td>{{ report.income }}</td>
+                        <td>Зарплата</td>
+                        <td>{{ salary }}</td>
+                    </tr>
+                    <tr>
+                        <td>Чаевые</td>
+                        <td>{{ tips }}</td>
+                    </tr>
+                    <tr>
+                        <td>Покуп. смены</td>
+                        <td>{{ saved_tax }}</td>
+                    </tr>
+                    <tr>
+                        <td>Доп.комиссия</td>
+                        <td>{{ extra_tax }}</td>
                     </tr>
                      <tr>
                         <td>Наличные</td>
-                        <td>{{ report.cash }}</td>
-                    </tr>
-                     <tr>
-                        <td>Покуп. смены</td>
-                        <td>{{ report.s_tax }}</td>
-                    </tr>
-                     <tr>
-                        <td>Чаевые</td>
-                        <td>{{ report.tips }}</td>
+                        <td>{{ cash }}</td>
                     </tr>
                     <tr>
                         <td>ЗСД</td>
-                        <td>{{ report.tolls }}</td>
+                        <td>{{ tolls }}</td>
                     </tr>
                     <tr>
-                        <td>км</td>
-                        <td>{{ report.mileage }}</td>
+                        <td>Мойки</td>
+                        <td>{{ wash }}</td>
+                    </tr>
+                    <tr>
+                        <td>Вода</td>
+                        <td>{{ water }}</td>
+                    </tr>
+                    <tr>
+                        <td>Прочее</td>
+                        <td>{{ other }}</td>
+                    </tr>
+                    <tr>
+                        <td>Часы</td>
+                        <td>{{ hours }}</td>
+                    </tr>
+                    <tr>
+                        <td>Пробег</td>
+                        <td>{{ mileage }}</td>
                     </tr>
                 </table>
             </div>

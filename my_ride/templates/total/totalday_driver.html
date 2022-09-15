@@ -120,8 +120,8 @@
             </tr>
             {% for obj in rides %}
             <tr >
-                <td><a href="#" >{{ obj.shift.week }}</a></td>
-                <td><a href="#" >{{ obj.shift }}</a></td>
+                <td>{{ obj.shift.week }}</td>
+                <td>{{ obj.shift }}</td>
                 <td><a href="{% url 'ride_detail' obj.number%}">{{ obj.number }}</a></td>
                 <td>{{ obj.price }}</td>
                 <td>{{ obj.cash }}</td>
