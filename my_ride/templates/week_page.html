@@ -6,7 +6,9 @@
 <div class="row">
     <div class="col-md-10 mx-auto mb-3">
         <h3>Все отчеты за неделю {{ week }}:</h3>
-        <div class="card col-md-3">
+    </div>
+    <div class="col-md-3 offset-md-1">
+        <div class="card">
             <h3 class="card-header">Выбрать водителя:</h3>
             <div class="card-body">
                 <form method="POST" action="" class="row g-3">
@@ -18,7 +20,9 @@
                 </form>
             </div>
         </div>
-        <div class="card col-md-3">
+    </div>
+    <div class="col-md-3">
+        <div class="card">
             <h3 class="card-header">Показатели <span style="color: darkred; text-decoration: underline">{{ name }}</span> за смену <span style="color: darkblue; text-decoration: underline">{{ shift }}</span>:</h3>
             <div class="card-body">
                 <table>
@@ -49,6 +53,8 @@
                 </table>
             </div>
         </div>
+    </div>
+    <div class="col-md-10 mx-auto mb-3">
         <div>
             {% for key, value in weekly_reports %}
                 {{ key }}
@@ -66,8 +72,9 @@
     </div>
     <div class="col-md-8 mx-auto">
         <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить заказ</a>
-        <a href="{% url 'start'%}" role="button" class="btn btn-info">Все недели</a>
         <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
+        <a href="{% url 'week_reports' week %}" role="button" class="btn btn-info">Отчеты за неделю</a>
+        <a href="{% url 'start'%}" role="button" class="btn btn-info">Все недели</a>
     </div>
 </div>
 

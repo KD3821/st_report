@@ -15,6 +15,7 @@
     <div class="col-md-8 mx-auto">
         <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить еще заказ</a>
         <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
+        <a href="{% url 'total_day_driver' ride.driver ride.shift %}" role="button" class="btn btn-info">Вернуться к отчету</a>
     </div>
 </div>
 

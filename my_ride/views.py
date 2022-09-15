@@ -4,7 +4,7 @@ from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm, ReportDriverFo
 from .models import Ride, Week, Shift, BalanceDriver, Driver, Car
 from django.contrib import messages
 from total import GrossDay, SaveTax, TaxRide
-from accounting import DriverDayBalance
+from accounting import DriverDayBalance, DriverWeekBalance
 from django.urls import reverse
 
 
@@ -129,8 +129,10 @@ def show_week_reports(request, week):
         data = form.cleaned_data
         driver = data['driver']
         for i in days:
-            week_reports = BalanceDriver.objects.filter(driver__name=driver).filter(day=i)
+            week_reports = BalanceDriver.objects.filter(day=i).filter(driver__name=driver)
             weekly_reports[i] = week_reports
+        test_calc = DriverWeekBalance()
+        test_calc.week_result(driver, week)
         return render(request, 'week_page.html', {'week': week, 'weekly_reports': weekly_reports.items(), 'form': form})
     return render(request, 'week_page.html', {'week': week, 'weekly_reports': weekly_reports.items(), 'form': form})
 
