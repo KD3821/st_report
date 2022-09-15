@@ -130,6 +130,7 @@ def show_week_reports(request, week):
         week_calc.week_result(driver, week)
         salary = week_calc.salary
         tips = week_calc.tips
+        buy = week_calc.buy
         saved_tax = week_calc.saved_tax
         extra_tax = week_calc.extra_tax
         cash = week_calc.cash
@@ -146,6 +147,7 @@ def show_week_reports(request, week):
             'driver': driver,
             'salary': salary,
             'tips': tips,
+            'buy': buy,
             'saved_tax': saved_tax,
             'extra_tax': extra_tax,
             'cash': cash,

@@ -36,6 +36,7 @@ class DriverDayBalance:
 class DriverWeekBalance:
     salary = IntegerField(default=0)
     tips = IntegerField(default=0)
+    buy = IntegerField(default=0)
     saved_tax = IntegerField(default=0)
     extra_tax = IntegerField(default=0)
     cash = IntegerField(default=0)
@@ -47,6 +48,7 @@ class DriverWeekBalance:
     def week_result(self, name, week):
         self.salary = 0
         self.tips = 0
+        self.buy = 0
         self.saved_tax = 0
         self.extra_tax = 0
         self.cash = 0
@@ -69,6 +71,7 @@ class DriverWeekBalance:
             else:
                 self.salary += (b.income / 100) * 30
             self.tips += b.tips
+            self.buy += b.buy_s
             self.saved_tax += b.s_tax
             self.extra_tax += b.x_tax
             self.cash += b.cash
@@ -81,6 +84,7 @@ class DriverWeekBalance:
         return {
             'salary': self.salary,
             'tips': self.tips,
+            'buy': self.buy,
             'saved_tax': self.saved_tax,
             'extra_tax': self.extra_tax,
             'cash': self.cash,
