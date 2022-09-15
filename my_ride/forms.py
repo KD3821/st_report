@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, Textarea
+from django.forms import ModelForm, Form, Textarea, ChoiceField
 from .models import Ride, Driver, Shift, Week, BalanceDriver
 
 
@@ -36,9 +36,17 @@ class TotalDayCarForm(ModelForm):
 
 
 class ReportDriverForm(ModelForm):
+    buy_s = ChoiceField(choices=[(0, 'нет'), (1460, 'будний'), (1670, 'выходной')])
+
     class Meta:
         model = BalanceDriver
-        fields = ['day', 'driver', 'car', 'miles_s', 'miles_f', 'hours', 'priority', 'wash', 'water', 'other', 'comment']
+        fields = ['day', 'driver', 'car', 'miles_s', 'miles_f', 'buy_s', 'hours', 'priority', 'fuel', 'wash', 'water', 'other', 'comment']
         widgets = {
             'comment': Textarea(attrs={'cols': 100, 'rows': 1}),
         }
+
+
+class SelectDriverForm(ModelForm):
+    class Meta:
+        model = BalanceDriver
+        fields = ['driver',]

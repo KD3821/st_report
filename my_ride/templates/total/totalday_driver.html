@@ -52,7 +52,11 @@
                         <td>{{ report.tips }}</td>
                     </tr>
                     <tr>
-                        <td>Пробег за смену</td>
+                        <td>ЗСД</td>
+                        <td>{{ report.tolls }}</td>
+                    </tr>
+                    <tr>
+                        <td>км</td>
                         <td>{{ report.mileage }}</td>
                     </tr>
                 </table>
@@ -64,25 +68,29 @@
             <h3 class="card-header">Расходы <span style="color: darkgreen; text-decoration: underline">{{ car }}</span> за смену <span style="color: darkblue; text-decoration: underline">{{ shift }}</span>:</h3>
             <div class="card-body">
                 <table>
-                     <tr>
-                        <td>Касса</td>
-                        <td>{{ report.income }}</td>
+                    <tr>
+                        <td>Пробег</td>
+                        <td>{{ report.mileage }}</td>
                     </tr>
                      <tr>
-                        <td>Наличные</td>
-                        <td>{{ report.cash }}</td>
+                        <td>Топливо</td>
+                        <td>{{ report.fuel }}</td>
                     </tr>
                      <tr>
-                        <td>Покуп. смены</td>
-                        <td>{{ report.s_tax }}</td>
+                        <td>Вода</td>
+                        <td>{{ report.water }}</td>
                     </tr>
                      <tr>
-                        <td>Чаевые</td>
-                        <td>{{ report.tips }}</td>
+                        <td>Мойка</td>
+                        <td>{{ report.wash }}</td>
+                    </tr>
+                     <tr>
+                        <td>Прочее</td>
+                        <td>{{ report.other }}</td>
                     </tr>
                     <tr>
-                        <td>Пробег за смену</td>
-                        <td>{{ report.mileage }}</td>
+                        <td>Смена</td>
+                        <td>{{ report.buy_s }}</td>
                     </tr>
                 </table>
             </div>
@@ -129,7 +137,7 @@
         <a href="{% url 'new_ride' %}" role="button" class="btn btn-primary">Добавить заказ</a>
         <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
         <a href="{% url 'new_report' shift name %}" role="button" class="btn btn-success">Отправить отчет</a>
-        <a href="#" role="button" class="btn btn-warning">Изменить отчет</a>
+        <a href="{% url 'report_change' shift name%}" role="button" class="btn btn-warning">Изменить отчет</a>
         <a href="{% url 'week_reports' week %}" role="button" class="btn btn-secondary">Отчеты за неделю</a>
     </div>
 </div>

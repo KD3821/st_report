@@ -10,16 +10,20 @@
         Дата: {{ balance_d.day }}<br>
         Водитель: {{ balance_d.driver }}<br>
         Автомобиль: {{ balance_d.car }}<br>
-        ЗСД: {{ balance_d.tolls }}<br>
+        Пробег начало: {{ balance_d.miles_s}}<br>
+        Пробег конец: {{ balance_d.miles_f}}<br>
         Касса: {{ balance_d.income }}<br>
+        ЗСД: {{ balance_d.tolls }}<br>
         Наличные: {{ balance_d.cash }}<br>
-        Чаевые: {{ balance_d.tips }}<br>
-        Покупка смены: {{ balance_d.s_tax }}<br>
+        Покупка смены: {{ balance_d.buy_s }}<br>
+        Экономия на покупке смены: {{ balance_d.s_tax }}<br>
         Доп.комиссия: {{ balance_d.x_tax }}<br>
+        Коммент: {{ balance_d.comment }}
     </div>
     <div class="col-md-8 mx-auto">
         <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить еще заказ</a>
         <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
+        <a href="{% url 'total_day_driver' balance_d.driver balance_d.day %}"role="button" class="btn btn-info" >Посмотреть отчет</a>
     </div>
 </div>
 

@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.views import View
-from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm, ReportDriverForm
+from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm, ReportDriverForm, SelectDriverForm
 from .models import Ride, Week, Shift, BalanceDriver, Driver, Car
 from django.contrib import messages
 from total import GrossDay, SaveTax, TaxRide
@@ -25,7 +25,6 @@ def prettify(rides):
         if ride.tip == 0:
             ride.tip = '---'
     return rides
-
 
 
 def enter_ride(request):
@@ -121,11 +120,19 @@ def show_reports(request):
 
 def show_week_reports(request, week):
     days = Shift.objects.filter(week__week=week)
+    form = SelectDriverForm(request.POST)
     weekly_reports = {}
     for i in days:
         week_reports = BalanceDriver.objects.filter(day=i)
         weekly_reports[i] = week_reports
-    return render(request, 'week_page.html', {'week': week, 'weekly_reports': weekly_reports.items()})
+    if form.is_valid():
+        data = form.cleaned_data
+        driver = data['driver']
+        for i in days:
+            week_reports = BalanceDriver.objects.filter(driver__name=driver).filter(day=i)
+            weekly_reports[i] = week_reports
+        return render(request, 'week_page.html', {'week': week, 'weekly_reports': weekly_reports.items(), 'form': form})
+    return render(request, 'week_page.html', {'week': week, 'weekly_reports': weekly_reports.items(), 'form': form})
 
 
 def show_weeks(request):
@@ -175,7 +182,6 @@ class DriverDay(View):
                 gross = GrossDay()
                 rides = gross.total_day_driver(shift, name)
                 rides = prettify(rides)
-                print(name)
                 try:
                     report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)
                 except BalanceDriver.DoesNotExist:
@@ -195,7 +201,6 @@ class DriverDay(View):
                 else:
                     name = '-----'
                 rides = prettify(rides)
-                print(name)
                 try:
                     report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)
                 except BalanceDriver.DoesNotExist:
@@ -286,11 +291,14 @@ def add_report(request, shift, name):
         balance_d.miles_s = data.get('miles_s')
         balance_d.miles_f = data.get('miles_f')
         balance_d.mileage = balance_d.miles_f - balance_d.miles_s
+        balance_d.buy_s = data.get('buy_s')
         balance_d.hours = data.get('hours')
         balance_d.priority = data.get('priority')
+        balance_d.fuel = data.get('fuel')
         balance_d.wash = data.get('wash')
         balance_d.water = data.get('water')
         balance_d.other = data.get('other')
+        balance_d.comment = data.get('comment')
         mybalance = DriverDayBalance()
         mybalance.rides_result(balance_d.driver, shift)
         balance_d.tolls = mybalance.tolls
@@ -304,4 +312,47 @@ def add_report(request, shift, name):
     return render(request, 'add_report.html', {'form': form})
 
 
-# def edit_report(request, shift, name):
+def edit_report(request, shift, name):
+    report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)
+    form = ReportDriverForm(request.POST or None, initial={
+        'day': report.day,
+        'driver': report.driver,
+        'car': report.car,
+        'miles_s': report.miles_s,
+        'miles_f': report.miles_f,
+        'hours': report.hours,
+        'buy_s': report.buy_s,
+        'priority': report.priority,
+        'fuel': report.fuel,
+        'wash': report.wash,
+        'water': report.water,
+        'other': report.other,
+        'comment': report.comment
+    })
+    if form.is_valid():
+        data = form.cleaned_data
+        report.day = data.get('day')
+        report.driver = data.get('driver')
+        report.car = data.get('car')
+        report.miles_s = data.get('miles_s')
+        report.miles_f = data.get('miles_f')
+        report.mileage = report.miles_f - report.miles_s
+        report.buy_s = data.get('buy_s')
+        report.hours = data.get('hours')
+        report.priority = data.get('priority')
+        report.fuel = data.get('fuel')
+        report.wash = data.get('wash')
+        report.water = data.get('water')
+        report.other = data.get('other')
+        report.comment = data.get('comment')
+        mybalance = DriverDayBalance()
+        mybalance.rides_result(report.driver, shift)
+        report.tolls = mybalance.tolls
+        report.income = mybalance.income
+        report.cash = mybalance.cash
+        report.tips = mybalance.tips
+        report.s_tax = mybalance.s_tax
+        report.x_tax = mybalance.x_tax
+        report.save()
+        return render(request, 'report_done.html', {'balance_d': report})
+    return render(request, 'add_report.html', {'form': form})

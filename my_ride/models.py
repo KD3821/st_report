@@ -100,6 +100,7 @@ class BalanceDriver(models.Model):
     car = ForeignKey(Car, on_delete=models.CASCADE)
     miles_s = IntegerField(default=0)
     miles_f = IntegerField(default=0)
+    buy_s = IntegerField(default=0)
     hours = IntegerField(default=0)
     priority = IntegerField(default=0)
     wash = IntegerField(default=0)

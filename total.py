@@ -38,14 +38,12 @@ class GrossDay:
 
 class SaveTax:
     def tax_saved(self, price):
-        # notax_ride = Ride.objects.get(number=number)
         tax = round((price * 25.7 / 100), 2)
         return tax
 
 
 class TaxRide:
     def tax_used(self, price, mode):
-        # taxed_ride = Ride.objects.get(number=number)
         used_tax = ExtraTax.objects.get(mode=mode)
         commission = round((price * used_tax.tax / 100), 2)
         return commission
