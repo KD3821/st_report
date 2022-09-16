@@ -117,15 +117,20 @@ def show_week_reports(request, week):
     days = Shift.objects.filter(week__week=week)
     form = SelectDriverForm(request.POST)
     weekly_reports = {}
+    weekly_plans = {}
     for i in days:
-        week_reports = BalanceDriver.objects.filter(day=i)
+        week_reports = BalanceDriver.objects.filter(day=i).order_by('car')
         weekly_reports[i] = week_reports
+        week_plans = PlanShift.objects.filter(plan_day=i).order_by('plan_car')
+        weekly_plans[i] = week_plans
     if form.is_valid():
         data = form.cleaned_data
         driver = data['driver']
         for i in days:
-            week_reports = BalanceDriver.objects.filter(day=i).filter(driver__name=driver)
+            week_reports = BalanceDriver.objects.filter(day=i).filter(driver__name=driver).order_by('car')
             weekly_reports[i] = week_reports
+            week_plans = PlanShift.objects.filter(plan_day=i).filter(plan_driver__name=driver).order_by('plan_car')
+            weekly_plans[i] = week_plans
         week_calc = DriverWeekBalance()
         week_calc.week_result(driver, week)
         salary = week_calc.salary
@@ -143,6 +148,7 @@ def show_week_reports(request, week):
         return render(request, 'week_page.html', {
             'week': week,
             'weekly_reports': weekly_reports.items(),
+            'weekly_plans': weekly_plans.items(),
             'form': form,
             'driver': driver,
             'salary': salary,
@@ -158,7 +164,7 @@ def show_week_reports(request, week):
             'hours': hours,
             'mileage': mileage
         })
-    return render(request, 'week_page.html', {'week': week, 'weekly_reports': weekly_reports.items(), 'form': form})
+    return render(request, 'week_page.html', {'week': week, 'weekly_reports': weekly_reports.items(), 'weekly_plans': weekly_plans.items(), 'form': form})
 
 
 def show_weeks(request):
@@ -174,9 +180,12 @@ class DriverDay(View):
         week = week.week
         qs = Ride.objects.filter(shift__date=shift)
         rides = qs.filter(driver__name=name).order_by('number')
+        plan = PlanShift.objects.filter(plan_day__date=shift).filter(plan_driver__name=name)[0:1].get()
         if rides:
             get_car = rides[0]
             car = get_car.car
+        elif plan:
+            car = plan.plan_car
         else:
             car = '-----'
         rides = prettify(rides)
@@ -390,9 +399,28 @@ def add_plan(request, week):
         plan_shift.plan_day = data.get('plan_day')
         plan_shift.plan_driver = data.get('plan_driver')
         plan_shift.plan_car = data.get('plan_car')
-        plan_shift.save()
-        return render(request, 'plan_done.html', {'plan_shift': plan_shift, 'week': week})
+        try:
+            c_busy = PlanShift.objects.filter(plan_day=plan_shift.plan_day).filter(plan_car=plan_shift.plan_car)[0:1].get()
+            if c_busy:
+                warning = 'Авто уже занято в этот день!'
+                return render(request, '404_plan.html', {'week': week, 'warning': warning})
+        except PlanShift.DoesNotExist:
+            try:
+                d_busy = PlanShift.objects.filter(plan_day=plan_shift.plan_day).filter(plan_driver=plan_shift.plan_driver)[0:1].get()
+                if d_busy:
+                    warning = 'Водитель уже занят в этот день!'
+                    return render(request, '404_plan.html', {'week': week, 'warning': warning})
+            except PlanShift.DoesNotExist:
+                plan_shift.save()
+                return render(request, 'plan_done.html', {'plan_shift': plan_shift, 'week': week})
     return render(request, 'add_plan.html', {'form': form, 'week': week })
+
+
+def x_plan(request, name, shift):
+    plan = PlanShift.objects.filter(plan_day__date=shift).filter(plan_driver__name=name)[0:1].get()
+    week = plan.plan_day.week
+    plan.delete()
+    return HttpResponseRedirect(reverse('week_reports', args=[week]))
 
 def show_plan(request, week):
     plans = PlanShift.objects.all()
