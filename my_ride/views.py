@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.views import View
-from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm, ReportDriverForm, SelectDriverForm
-from .models import Ride, Week, Shift, BalanceDriver, Driver, Car
+from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm, ReportDriverForm, SelectDriverForm, AddPlanForm
+from .models import Ride, Week, Shift, BalanceDriver, Driver, PlanShift
 from django.contrib import messages
 from total import GrossDay, SaveTax, TaxRide
 from accounting import DriverDayBalance, DriverWeekBalance
@@ -55,8 +55,8 @@ def enter_ride(request):
 
 
 
-def edit_ride(request, number):
-    ride = Ride.objects.get(number=number)
+def edit_ride(request, number, name):
+    ride = Ride.objects.filter(driver__name=name).get(number=number)
     form = RideForm(request.POST or None, initial={
         'number': ride.number,
         'car': ride.car,
@@ -108,8 +108,8 @@ def show_rides(request):
     return render(request, 'ride_list.html', {'rides': rides})
 
 
-def show_detail(request, number):
-    ride = Ride.objects.get(number=number)
+def show_detail(request, number, name):
+    ride = Ride.objects.filter(driver__name=name).get(number=number)
     return render(request, 'ride_detail.html', {'ride': ride})
 
 
@@ -205,15 +205,7 @@ class DriverDay(View):
                 data = d_form.cleaned_data
                 shift = data['shift']
                 shift = str(shift)
-                gross = GrossDay()
-                rides = gross.total_day_driver(shift, name)
-                rides = prettify(rides)
-                try:
-                    report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)
-                except BalanceDriver.DoesNotExist:
-                    report = None
                 return HttpResponseRedirect(reverse('total_day_driver', args=[name, shift]))
-                # return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'd_form': d_form, 'c_form': c_form, 'car': car, 'report': report })
         elif 'car_sub' in request.POST:
             if c_form.is_valid():
                 data = c_form.cleaned_data
@@ -226,13 +218,8 @@ class DriverDay(View):
                     name = get_name.driver
                 else:
                     name = '-----'
-                rides = prettify(rides)
-                try:
-                    report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)
-                except BalanceDriver.DoesNotExist:
-                    report = None
                 return HttpResponseRedirect(reverse('total_day_driver', args=[name, shift]))
-                # return render(request, 'total/totalday_driver.html', {'rides': rides, 'name': name, 'shift': shift, 'week': week, 'd_form': d_form, 'c_form': c_form, 'car': car, 'report': report })
+
 
 
 class CarDay(View):
@@ -300,14 +287,20 @@ class CarWeek(View):
 def add_report(request, shift, name):
     balance_d = BalanceDriver()
     day = Shift.objects.get(date=shift)
+    week = day.week
     try:
         driver = Driver.objects.get(name=name)
     except Driver.DoesNotExist:
-        driver = None
-        return render(request, '404.html')
+        return render(request, '404.html', {'week': week})
+    try:
+        ride = Ride.objects.filter(shift=day).filter(driver__name=name)[0:1].get()
+    except Ride.DoesNotExist:
+        return render(request, '404.html', {'week': week})
+    car = ride.car
     form = ReportDriverForm(request.POST or None, initial={
         'day': day,
-        'driver': driver
+        'driver': driver,
+        'car': car
     })
     if form.is_valid():
         data = form.cleaned_data
@@ -334,15 +327,17 @@ def add_report(request, shift, name):
         balance_d.s_tax = mybalance.s_tax
         balance_d.x_tax = mybalance.x_tax
         balance_d.save()
-        return render(request, 'report_done.html', {'balance_d': balance_d})
-    return render(request, 'add_report.html', {'form': form})
+        return render(request, 'report_done.html', {'balance_d': balance_d, 'week': week})
+    return render(request, 'add_report.html', {'form': form, 'week': week})
 
 
 def edit_report(request, shift, name):
+    day = Shift.objects.get(date=shift)
+    week = day.week
     try:
         report = BalanceDriver.objects.filter(day__date=shift).get(driver__name=name)
     except BalanceDriver.DoesNotExist:
-        return render(request, '404.html')
+        return render(request, '404.html', {'week': week})
     form = ReportDriverForm(request.POST or None, initial={
         'day': report.day,
         'driver': report.driver,
@@ -383,7 +378,22 @@ def edit_report(request, shift, name):
         report.s_tax = mybalance.s_tax
         report.x_tax = mybalance.x_tax
         report.save()
-        return render(request, 'report_done.html', {'balance_d': report})
-    return render(request, 'add_report.html', {'form': form})
+        return render(request, 'report_done.html', {'balance_d': report, 'week': week})
+    return render(request, 'add_report.html', {'form': form, 'week': week})
 
 
+def add_plan(request, week):
+    plan_shift = PlanShift()
+    form = AddPlanForm(request.POST or None, week=week)
+    if form.is_valid():
+        data = form.cleaned_data
+        plan_shift.plan_day = data.get('plan_day')
+        plan_shift.plan_driver = data.get('plan_driver')
+        plan_shift.plan_car = data.get('plan_car')
+        plan_shift.save()
+        return render(request, 'plan_done.html', {'plan_shift': plan_shift, 'week': week})
+    return render(request, 'add_plan.html', {'form': form, 'week': week })
+
+def show_plan(request, week):
+    plans = PlanShift.objects.all()
+    return render(request, 'plan_page.html', {'plans': plans, 'week': week})

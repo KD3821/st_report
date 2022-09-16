@@ -1,5 +1,5 @@
 from django.db.models import IntegerField
-from my_ride.models import Ride, Car, Shift, Driver, BalanceDriver
+from my_ride.models import Ride, Shift, BalanceDriver
 
 
 class DriverDayBalance:
@@ -67,9 +67,9 @@ class DriverWeekBalance:
         for i in dayres_list:
             b = i[0]
             if b.income >= 1000:
-                self.salary += (b.income / 100) * 35
+                self.salary += int((b.income / 100) * 35)
             else:
-                self.salary += (b.income / 100) * 30
+                self.salary += int((b.income / 100) * 30)
             self.tips += b.tips
             self.buy += b.buy_s
             self.saved_tax += b.s_tax

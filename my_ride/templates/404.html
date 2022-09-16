@@ -5,13 +5,13 @@
 {% block content %}
 <div class="row">
     <div class="col-md-10 mx-auto mb-3">
-        Невозможно отправить отчет:<br>
-        Нет поездок на указанном авто за указанную дату
+        Невозможно отправить/изменить отчет:<br>
+        у данного водителя на данном авто за указанную дату - НЕТ ПОЗДОК!
     </div>
     <div class="col-md-8 mx-auto">
         <a href="{% url 'new_ride'%}" role="button" class="btn btn-info">Добавить заказ</a>
-        <a href="#" role="button" class="btn btn-info">Завершить смену</a>
         <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
+        <a href="{% url 'week_reports' week %}" role="button" class="btn btn-info">Отчеты за неделю</a>
     </div>
 </div>
 

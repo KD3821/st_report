@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %} Смена создана {% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <h3>Детали смены для {{ plan_shift.plan_driver }} на {{ plan_shift.plan_day }}:</h3>
+        <hr>
+        Автомобиль: {{ plan_shift.plan_car }}<br>
+        <hr>
+    </div>
+    <div class="col-md-8 mx-auto">
+        <a href="{% url 'new_ride' %}" role="button" class="btn btn-secondary">Добавить еще заказ</a>
+        <a href="{% url 'rides_all' %}" role="button" class="btn btn-info">Посмотреть все заказы</a>
+        <a href="{% url 'week_reports' week %}" role="button" class="btn btn-info">Отчеты за неделю</a>
+        <a href="{% url 'plan_all' week %}" role="button" class="btn btn-info">План на неделю</a>
+    </div>
+</div>
+
+{% endblock %}

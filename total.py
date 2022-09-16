@@ -1,4 +1,4 @@
-from my_ride.models import Shift, Car, Driver, Ride, ExtraTax, Balance
+from my_ride.models import Ride, ExtraTax
 
 
 
@@ -18,23 +18,6 @@ class GrossDay:
         return qs
 
 
-# class GrossWeek:
-#     def rides_week(self, week):
-#         rides_per_week = []
-#         qs = Shift.objects.filter(week__week=week)
-#         for i in qs:
-#             rides_per_day = Ride.objects.filter(shift__date=str(i))
-#             rides_per_week.append(rides_per_day)
-#         return rides_per_week
-#
-#     def rides_week_car(self, week, car):
-#         qs = Ride.objects.select_related('shift__week').filter(car__plate=car)
-#         return qs
-#
-#     def rides_week_driver(self, name):
-#         qs = Ride.objects.filter(driver__name=name)
-#         return qs
-
 
 class SaveTax:
     def tax_saved(self, price):
@@ -49,6 +32,3 @@ class TaxRide:
         return commission
 
 
-class BalanceDay:
-    def driver_day(self, name):
-        qs = Ride.objects.filter(driver__name=name)

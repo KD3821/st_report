@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import DateField, DateTimeField, CharField, IntegerField, BooleanField, ForeignKey, TextField
+from django.db.models import DateField, CharField, IntegerField, BooleanField, ForeignKey, TextField
 
 
 class Week(models.Model):
@@ -135,3 +135,12 @@ class BalanceCar(models.Model):
 
     def __str__(self):
         return f'{self.c_car} - {self.c_day}'
+
+
+class PlanShift(models.Model):
+    plan_day = ForeignKey(Shift, on_delete=models.CASCADE)
+    plan_car = ForeignKey(Car, on_delete=models.CASCADE)
+    plan_driver = ForeignKey(Driver, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.plan_day}-{self.plan_car}'

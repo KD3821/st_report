@@ -1,11 +1,12 @@
 from django.contrib import admin
-from .models import Week, Shift, Car, Driver, Ride, ExtraTax, BalanceDriver
+from .models import Week, Shift, Car, Driver, Ride, ExtraTax, BalanceDriver, PlanShift
 
 admin.site.register(Week)
 admin.site.register(Car)
 admin.site.register(Driver)
 admin.site.register(ExtraTax)
 admin.site.register(BalanceDriver)
+admin.site.register(PlanShift)
 
 
 @admin.register(Shift)

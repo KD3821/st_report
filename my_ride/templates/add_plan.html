@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %} Завершить смену {% endblock %}
+{% block title %} Добавить смену {% endblock %}
 
 {% block content %}
 
 <div class="row">
     <div class="col-md-8 mx-auto">
-        <h3>Отчет по смене:</h3>
+        <h3>Запланировать смену:</h3>
         <form method="POST" action="" class="row g-3">
             <div class="mb-3">
                 {% csrf_token %}
@@ -20,6 +20,7 @@
         <hr>
         <a href="{% url 'rides_all'%}" role="button" class="btn btn-info">Посмотреть все заказы</a>
         <a href="{% url 'week_reports' week %}" role="button" class="btn btn-info">Отчеты за неделю</a>
+        <a href="{% url 'plan_all' week %}" role="button" class="btn btn-info">План на неделю</a>
     </div>
 </div>
 
