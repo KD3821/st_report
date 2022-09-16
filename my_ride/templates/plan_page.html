@@ -5,15 +5,36 @@
 {% block content %}
 <div class="row">
     <div class="col-md-10 mx-auto mb-3">
-        <h3>Все смены на неделю {{ week }}:</h3>
+        <h3>План смен на неделю {{ week }}:</h3>
+    </div>
+     <div class="col-md-3 offset-md-1">
+        <div class="card">
+            <h3 class="card-header">Выбрать неделю:</h3>
+            <div class="card-body">
+                <form method="POST" action="" class="row g-3">
+                    <div class="mb-1">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    </div>
+                    <button type="submit" class="btn btn-info col-md-5">Выбрать</button>
+                </form>
+            </div>
+        </div>
     </div>
     <div class="col-md-10 mx-auto mb-3">
         <div>
-            {% for obj in plans %}
+            {% for key, value in plans %}
+                {{ key }}
                 <div>
-                    <a href="{% url 'total_day_driver' obj.plan_driver obj.plan_day %}" role="button" class="btn btn-secondary">{{ obj.plan_day }}<br>{{ obj.plan_car }}<br>{{ obj.plan_driver }}</a>
+                    {% if value %}
+                        {% for i in value %}
+                            <div class="btn-group-vertical">
+                                <a href="{% url 'total_day_driver' i.plan_driver i.plan_day %}" role="button" class="btn btn-secondary">{{ i.plan_car }}<br>{{ i.plan_driver }}</a>
+                                <a href="{% url 'del_plan' i.plan_driver i.plan_day %}" role="button" class="btn btn-danger mr-1">X</a>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
-
             {% endfor %}
         </div>
     </div>

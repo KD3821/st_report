@@ -92,7 +92,10 @@
                 <div>
                 {% if value %}
                     {% for i in value %}
-                    <a href="{% url 'total_day_driver' i.driver i.day %}" role="button" class="btn btn-success">{{ i.car }}<br>{{ i.driver }}<br> {{ i.income }} - {{ i.hours}} ч.</a>
+                    <div class="btn-group-vertical">
+                        <a href="{% url 'total_day_driver' i.driver i.day %}" role="button" class="btn btn-success">{{ i.car }}<br>{{ i.driver }}</a>
+                        <a href="{% url 'total_day_driver' i.driver i.day %}" role="button" class="btn btn-outline-success">{{ i.income }} - {{ i.hours}} ч.</a>
+                    </div>
                     {% endfor %}
                 {% endif %}
                 </div>

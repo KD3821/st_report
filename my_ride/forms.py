@@ -62,3 +62,9 @@ class AddPlanForm(ModelForm):
         super(AddPlanForm, self).__init__(*args, **kwargs)
         if week:
             self.fields['plan_day'].queryset = Shift.objects.filter(week__week=week)
+
+
+class SelectWeekForm(ModelForm):
+    class Meta:
+        model = Shift
+        fields = ['week',]

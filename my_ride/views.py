@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.views import View
-from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm, ReportDriverForm, SelectDriverForm, AddPlanForm
+from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm, ReportDriverForm, SelectDriverForm, AddPlanForm, SelectWeekForm
 from .models import Ride, Week, Shift, BalanceDriver, Driver, PlanShift
 from django.contrib import messages
 from total import GrossDay, SaveTax, TaxRide
@@ -422,6 +422,16 @@ def x_plan(request, name, shift):
     plan.delete()
     return HttpResponseRedirect(reverse('week_reports', args=[week]))
 
+
 def show_plan(request, week):
-    plans = PlanShift.objects.all()
-    return render(request, 'plan_page.html', {'plans': plans, 'week': week})
+    form = SelectWeekForm(request.POST)
+    if form.is_valid():
+        data = form.cleaned_data
+        week = data.get('week')
+        week = week.week
+    days = Shift.objects.filter(week__week=week)
+    weekly_plans = {}
+    for day in days:
+        week_plans = PlanShift.objects.filter(plan_day=day)
+        weekly_plans[day] = week_plans
+    return render(request, 'plan_page.html', {'plans': weekly_plans.items(), 'week': week, 'form': form})
