@@ -432,6 +432,30 @@ def show_plan(request, week):
     days = Shift.objects.filter(week__week=week)
     weekly_plans = {}
     for day in days:
-        week_plans = PlanShift.objects.filter(plan_day=day)
+        week_plans = PlanShift.objects.filter(plan_day=day).order_by('plan_car')
         weekly_plans[day] = week_plans
     return render(request, 'plan_page.html', {'plans': weekly_plans.items(), 'week': week, 'form': form})
+
+
+def edit_plan(request, week, name, shift):
+    plan = PlanShift.objects.filter(plan_day__date=shift).filter(plan_driver__name=name)[0:1].get()
+    form = AddPlanForm(request.POST or None, initial={
+        'plan_day': plan.plan_day,
+        'plan_car': plan.plan_car,
+        'plan_driver': plan.plan_driver
+    })
+    if form.is_valid():
+        data = form.cleaned_data
+        plan.plan_day = data.get('plan_day')
+        plan.plan_driver = data.get('plan_driver')
+        plan.plan_car = data.get('plan_car')
+        try:
+            d_busy = PlanShift.objects.filter(plan_day=plan.plan_day).filter(
+                plan_driver=plan.plan_driver)[0:1].get()
+            if d_busy:
+                warning = 'Водитель уже занят в этот день!'
+                return render(request, '404_plan.html', {'week': week, 'warning': warning})
+        except PlanShift.DoesNotExist:
+            plan.save()
+            return render(request, 'plan_done.html', {'plan_shift': plan, 'week': week})
+    return render(request, 'add_plan.html', {'form': form, 'week': week})
