@@ -31,7 +31,7 @@
                             <div class="btn-group-vertical">
                                 <a href="{% url 'total_day_driver' i.plan_driver i.plan_day %}" role="button" class="btn btn-secondary">{{ i.plan_car }}<br>{{ i.plan_driver }}</a>
                                 <div class="btn-group" role="group">
-                                    <a href="{% url 'plan_change' week i.plan_driver i.plan_day %}" role="button" class="btn btn-warning mr-1">ok</a>
+                                    <a href="{% url 'plan_change' week i.plan_driver i.plan_day %}" role="button" class="btn btn-warning mr-1">...</a>
                                     <a href="{% url 'del_plan' i.plan_driver i.plan_day %}" role="button" class="btn btn-danger mr-1">X</a>
                                 </div>
                             </div>

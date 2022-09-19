@@ -413,14 +413,14 @@ def add_plan(request, week):
             except PlanShift.DoesNotExist:
                 plan_shift.save()
                 return render(request, 'plan_done.html', {'plan_shift': plan_shift, 'week': week})
-    return render(request, 'add_plan.html', {'form': form, 'week': week })
+    return render(request, 'add_plan.html', {'form': form, 'week': week})
 
 
 def x_plan(request, name, shift):
     plan = PlanShift.objects.filter(plan_day__date=shift).filter(plan_driver__name=name)[0:1].get()
     week = plan.plan_day.week
     plan.delete()
-    return HttpResponseRedirect(reverse('week_reports', args=[week]))
+    return HttpResponseRedirect(reverse('plan_all', args=[week]))
 
 
 def show_plan(request, week):
@@ -439,6 +439,7 @@ def show_plan(request, week):
 
 def edit_plan(request, week, name, shift):
     plan = PlanShift.objects.filter(plan_day__date=shift).filter(plan_driver__name=name)[0:1].get()
+    plan_try = PlanShift.objects.filter(plan_day__date=shift).filter(plan_driver__name=name)[0:1].get()
     form = AddPlanForm(request.POST or None, initial={
         'plan_day': plan.plan_day,
         'plan_car': plan.plan_car,
@@ -449,13 +450,21 @@ def edit_plan(request, week, name, shift):
         plan.plan_day = data.get('plan_day')
         plan.plan_driver = data.get('plan_driver')
         plan.plan_car = data.get('plan_car')
+        plan.delete()
         try:
-            d_busy = PlanShift.objects.filter(plan_day=plan.plan_day).filter(
-                plan_driver=plan.plan_driver)[0:1].get()
-            if d_busy:
-                warning = 'Водитель уже занят в этот день!'
+            c_busy = PlanShift.objects.filter(plan_day=plan.plan_day).filter(plan_car=plan.plan_car)[0:1].get()
+            if c_busy:
+                warning = 'Авто уже занято в этот день!'
+                plan_try.save()
                 return render(request, '404_plan.html', {'week': week, 'warning': warning})
         except PlanShift.DoesNotExist:
-            plan.save()
-            return render(request, 'plan_done.html', {'plan_shift': plan, 'week': week})
+            try:
+                d_busy = PlanShift.objects.filter(plan_day=plan.plan_day).filter(plan_driver=plan.plan_driver)[0:1].get()
+                if d_busy:
+                    warning = 'Водитель уже занят в этот день!'
+                    plan_try.save()
+                    return render(request, '404_plan.html', {'week': week, 'warning': warning})
+            except PlanShift.DoesNotExist:
+                plan.save()
+                return render(request, 'plan_done.html', {'plan_shift': plan, 'week': week})
     return render(request, 'add_plan.html', {'form': form, 'week': week})

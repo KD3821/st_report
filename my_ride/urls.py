@@ -21,5 +21,5 @@ urlpatterns = [
     path('planned/', add_plan, name="plan_done"),
     path('planlist/<str:week>/', show_plan, name="plan_all"),
     path('xplan/<str:name>/<str:shift>/', x_plan, name="del_plan"),
-    path('<str:week>/edit_plan/<str:name>/<str:shift>', edit_plan, name="plan_change")
+    path('<str:week>/edit_plan/<str:name>/<str:shift>/', edit_plan, name="plan_change")
 ]
