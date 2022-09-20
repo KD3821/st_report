@@ -48,7 +48,8 @@
       </div>
       {% if user.is_authenticated %}
       <div class="col-md-3 offset-md-7">
-          <a href="{% url 'secret'%}" role="button" class="btn btn-link" >Секретная страница</a>
+          <a href="{% url 'secret'%}" role="button" class="btn btn-link" >Секрет</a>
+           <a href="{% url 'secret2'%}" role="button" class="btn btn-link" >Секрет 2</a>
           <a href="{% url 'password_change'%}" role="button" class="btn btn-link" >Сменить пароль</a>
           <a href="{% url 'logout'%}" role="button" class="btn btn-link" >Выход</a>
       </div>
