@@ -27,6 +27,44 @@
             </div>
         </nav>
     </div>
+    <div class="container">
+    <div class="row">
+      <div class="col-8 mx-auto my-3">
+        {% if messages %}
+            {% for message in messages %}
+              {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% else %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endif %}
+            {% endfor %}
+        {% endif %}
+      </div>
+      {% if user.is_authenticated %}
+      <div class="col-md-3 offset-md-7">
+          <a href="{% url 'secret'%}" role="button" class="btn btn-link" >Секретная страница</a>
+          <a href="{% url 'password_change'%}" role="button" class="btn btn-link" >Сменить пароль</a>
+          <a href="{% url 'logout'%}" role="button" class="btn btn-link" >Выход</a>
+      </div>
+      <div class="col-md-3 offset-md-7">
+          <strong>Вы вошли как:   <span style="color: green;">{{ user.username }}</span></strong><br>
+      {% else %}
+      <div class="col-md-3 offset-md-7">
+          <a href="{% url 'signup'%}" role="button" class="btn btn-link" >Регистрация</a>
+          <a href="{% url 'login'%}" role="button" class="btn btn-link" >Вход</a>
+      </div>
+      <div class="col-md-3 offset-md-7">
+          <strong><span style="color: red;">Вы не авторизованы</span></strong><br>
+      {% endif %}
+      </div>
+    </div>
+  </div>
     <div>
         <p>
             {% block content %}{% endblock %}

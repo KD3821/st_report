@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %} Вход в систему {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto mb-3">
+        <h3>Вход в систему</h3>
+        <form method="POST" action="" class="row g-3">
+            <div class="mb-3">
+                {% csrf_token %}
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-info col-md-2">Войти</button>
+        </form>
+        <a href="{% url 'password_reset' %}" role="button" class="btn btn-link col-md-2 mt-2">Забыли пароль</a>
+    </div>
+    <div class="col-md-8 mx-auto">
+        <hr>
+        <a href="{% url 'rides_all'%}" role="button" class="btn btn-info">Посмотреть все заказы</a>
+        <a href="{% url 'start' %}" role="button" class="btn btn-info">Все недели</a>
+    </div>
+</div>
+{% endblock %}

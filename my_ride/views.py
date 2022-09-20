@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.views import View
 from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm, ReportDriverForm, SelectDriverForm, AddPlanForm, SelectWeekForm
 from .models import Ride, Week, Shift, BalanceDriver, Driver, PlanShift
@@ -6,6 +6,9 @@ from django.contrib import messages
 from total import GrossDay, SaveTax, TaxRide
 from accounting import DriverDayBalance, DriverWeekBalance
 from django.urls import reverse
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 
 
 def prettify(rides):
@@ -169,7 +172,9 @@ def show_week_reports(request, week):
 
 def show_weeks(request):
     weeks = Week.objects.all().order_by('week')
-    return render(request, 'start_page.html', {'weeks': weeks})
+    return render(request, 'start_page.html', {
+        'weeks': weeks
+    })
 
 
 
@@ -407,14 +412,17 @@ def add_plan(request, week):
             c_busy = PlanShift.objects.filter(plan_day=plan_shift.plan_day).filter(plan_car=plan_shift.plan_car)[0:1].get()
             if c_busy:
                 warning = 'Авто уже занято в этот день!'
+                messages.error(request, 'А/м уже назначен для другого водителя.')
                 return render(request, '404_plan.html', {'week': week, 'warning': warning})
         except PlanShift.DoesNotExist:
             try:
                 d_busy = PlanShift.objects.filter(plan_day=plan_shift.plan_day).filter(plan_driver=plan_shift.plan_driver)[0:1].get()
                 if d_busy:
                     warning = 'Водитель уже занят в этот день!'
+                    messages.error(request, 'Водитель уже назначен на другой а/м.')
                     return render(request, '404_plan.html', {'week': week, 'warning': warning})
             except PlanShift.DoesNotExist:
+                messages.success(request, 'Смена успешно запланирована.')
                 plan_shift.save()
                 return render(request, 'plan_done.html', {'plan_shift': plan_shift, 'week': week})
     return render(request, 'add_plan.html', {'form': form, 'week': week})
@@ -459,6 +467,7 @@ def edit_plan(request, week, name, shift):
             c_busy = PlanShift.objects.filter(plan_day=plan.plan_day).filter(plan_car=plan.plan_car)[0:1].get()
             if c_busy:
                 warning = 'Авто уже занято в этот день!'
+                messages.error(request, 'А/м уже назначен для другого водителя.')
                 plan_try.save()
                 return render(request, '404_plan.html', {'week': week, 'warning': warning})
         except PlanShift.DoesNotExist:
@@ -466,9 +475,29 @@ def edit_plan(request, week, name, shift):
                 d_busy = PlanShift.objects.filter(plan_day=plan.plan_day).filter(plan_driver=plan.plan_driver)[0:1].get()
                 if d_busy:
                     warning = 'Водитель уже занят в этот день!'
+                    messages.error(request, 'Водитель уже назначен на другой а/м.')
                     plan_try.save()
                     return render(request, '404_plan.html', {'week': week, 'warning': warning})
             except PlanShift.DoesNotExist:
+                messages.success(request, 'Данные по смене успешно изменены.')
                 plan.save()
                 return render(request, 'plan_done.html', {'plan_shift': plan, 'week': week})
     return render(request, 'add_plan.html', {'form': form, 'week': week})
+
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('start')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/signup.html', {
+        'form': form
+    })
+
+@login_required
+def secret_page(request):
+    return render(request, 'secret_page.html')

@@ -15,9 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from my_ride.views import signup, secret_page
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('ride/', include('my_ride.urls')),
+    path('signup/', signup, name='signup'),
+    path('secret/', secret_page, name='secret'),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]
