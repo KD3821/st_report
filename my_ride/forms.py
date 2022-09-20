@@ -36,7 +36,7 @@ class TotalDayCarForm(ModelForm):
 
 
 class ReportDriverForm(ModelForm):
-    buy_s = ChoiceField(choices=[(0, 'нет'), (1460, 'будний'), (1670, 'выходной')])
+    buy_s = ChoiceField(choices=[(0, 'нет'), (1460, 'будний'), (1670, 'выходной')], label='Цена покупки смены')
 
     class Meta:
         model = BalanceDriver

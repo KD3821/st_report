@@ -180,14 +180,18 @@ class DriverDay(View):
         week = week.week
         qs = Ride.objects.filter(shift__date=shift)
         rides = qs.filter(driver__name=name).order_by('number')
-        plan = PlanShift.objects.filter(plan_day__date=shift).filter(plan_driver__name=name)[0:1].get()
+        # plan = PlanShift.objects.filter(plan_day__date=shift).filter(plan_driver__name=name)[0:1].get()
         if rides:
             get_car = rides[0]
             car = get_car.car
-        elif plan:
-            car = plan.plan_car
+        # elif plan:
+        #     car = plan.plan_car
         else:
-            car = '-----'
+            try:
+                plan = PlanShift.objects.filter(plan_day__date=shift).filter(plan_driver__name=name)[0:1].get()
+                car = plan.plan_car
+            except PlanShift.DoesNotExist:
+                car = '-----'
         rides = prettify(rides)
         d_form = TotalDayDriverForm(request.POST, week=week)
         c_form = TotalDayCarForm(request.POST, week=week)
