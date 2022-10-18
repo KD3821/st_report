@@ -2,13 +2,13 @@ from django.urls import path
 from .views import enter_ride, delete_ride, show_rides, add_plan, show_plan, x_plan, edit_plan, show_weeks, show_week_reports,CarDay, DriverDay, show_detail, edit_ride, DriverWeek, CarWeek, add_report, edit_report, signup
 
 urlpatterns = [
-    path('add/', enter_ride, name="new_ride"),
+    path('add/<str:week>/', enter_ride, name="new_ride"),
     path('added/', enter_ride, name="ride_added"),
     path('list/', show_rides, name="rides_all"),
     path('start/', show_weeks, name="start"),
     path('week_reports/<str:week>/', show_week_reports, name="week_reports"),
-    path('detail/<str:number>/<str:name>/', show_detail, name="ride_detail"),
-    path('edit/<str:number>/<str:name>/', edit_ride, name="ride_change"),
+    path('detail/<str:week>/<str:number>/<str:name>/', show_detail, name="ride_detail"),
+    path('edit/<str:week>/<str:number>/<str:name>/', edit_ride, name="ride_change"),
     path('delete/<str:number>', delete_ride, name="x_ride"),
     path('totaldd/<str:name>/<str:shift>/', DriverDay.as_view(), name="total_day_driver"),
     path('totalwd/<str:name>/<str:week>/', DriverWeek.as_view(), name="total_week_driver"),

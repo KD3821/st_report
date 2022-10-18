@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.views import View
 from .forms import RideForm, TotalDayDriverForm, TotalDayCarForm, ReportDriverForm, SelectDriverForm, AddPlanForm, SelectWeekForm
-from .models import Ride, Week, Shift, BalanceDriver, Driver, PlanShift
+from .models import Ride, Car, Week, Shift, BalanceDriver, Driver, PlanShift
 from django.contrib import messages
 from total import GrossDay, SaveTax, TaxRide
 from accounting import DriverDayBalance, DriverWeekBalance
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Permission
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
@@ -31,12 +32,14 @@ def prettify(rides):
             ride.tip = '---'
     return rides
 
-
-def enter_ride(request):
+@login_required
+def enter_ride(request, week):
+    user = request.user
     ride = Ride()
-    form = RideForm(request.POST or None)
+    form = RideForm(request.POST or None, user=user, week=week)
     if form.is_valid():
         data = form.cleaned_data
+        ride.user = user
         ride.number = data.get('number')
         ride.driver = data.get('driver')
         ride.car = data.get('car')
@@ -55,12 +58,13 @@ def enter_ride(request):
         ride.comment = data.get('comment')
         ride.save()
         messages.success(request, 'Поездка добавлена!')
-        return render(request, 'ride_done.html', {'ride': ride})
-    return render(request, 'add_ride.html', {'form': form})
+        return render(request, 'ride_done.html', {'ride': ride, 'week': week})
+    print(user.username)
+    return render(request, 'add_ride.html', {'form': form, 'user': user, 'week': week})
 
 
-
-def edit_ride(request, number, name):
+@login_required
+def edit_ride(request, number, name, week):
     ride = Ride.objects.filter(driver__name=name).get(number=number)
     form = RideForm(request.POST or None, initial={
         'number': ride.number,
@@ -95,46 +99,49 @@ def edit_ride(request, number, name):
         ride.comment = data.get('comment')
         ride.save()
         messages.success(request, 'Поездка изменена!')
-        return render(request, 'ride_done.html', {'ride': ride})
+        return render(request, 'ride_done.html', {'ride': ride, 'week': week})
     return render(request, 'change_ride.html', {'form': form, 'ride': ride})
 
-
+@login_required
 def delete_ride(request, number):
+    user = request.user
     ride = Ride.objects.get(number=number)
     ride.delete()
-    rides = Ride.objects.all().order_by('shift', 'car')
+    rides = Ride.objects.filter(user=user).order_by('shift', 'car')
     rides = prettify(rides)
     return render(request, 'ride_list.html', {'rides': rides})
 
-
+@login_required
 def show_rides(request):
-    rides = Ride.objects.all().order_by('shift', 'car') # to make filter by shift
+    user = request.user
+    rides = Ride.objects.filter(user=user).order_by('shift', 'car') # to make filter by shift
     rides = prettify(rides)
     return render(request, 'ride_list.html', {'rides': rides})
 
-
-def show_detail(request, number, name):
+@login_required
+def show_detail(request, number, name, week):
     ride = Ride.objects.filter(driver__name=name).get(number=number)
-    return render(request, 'ride_detail.html', {'ride': ride})
+    return render(request, 'ride_detail.html', {'ride': ride, 'week': week})
 
-
+@login_required
 def show_week_reports(request, week):
+    user = request.user
     days = Shift.objects.filter(week__week=week)
-    form = SelectDriverForm(request.POST)
+    form = SelectDriverForm(request.POST, user=user)
     weekly_reports = {}
     weekly_plans = {}
     for i in days:
-        week_reports = BalanceDriver.objects.filter(day=i).order_by('car')
+        week_reports = BalanceDriver.objects.filter(driver__user=user).filter(day=i).order_by('car')
         weekly_reports[i] = week_reports
-        week_plans = PlanShift.objects.filter(plan_day=i).order_by('plan_car')
+        week_plans = PlanShift.objects.filter(plan_car__user=user).filter(plan_day=i).order_by('plan_car')
         weekly_plans[i] = week_plans
     if form.is_valid():
         data = form.cleaned_data
         driver = data['driver']
         for i in days:
-            week_reports = BalanceDriver.objects.filter(day=i).filter(driver__name=driver).order_by('car')
+            week_reports = BalanceDriver.objects.filter(driver__user=user).filter(day=i).filter(driver__name=driver)
             weekly_reports[i] = week_reports
-            week_plans = PlanShift.objects.filter(plan_day=i).filter(plan_driver__name=driver).order_by('plan_car')
+            week_plans = PlanShift.objects.filter(plan_driver__user=user).filter(plan_day=i).filter(plan_driver__name=driver)
             weekly_plans[i] = week_plans
         week_calc = DriverWeekBalance()
         week_calc.week_result(driver, week)
@@ -169,7 +176,7 @@ def show_week_reports(request, week):
             'hours': hours,
             'mileage': mileage
         })
-    return render(request, 'week_page.html', {'week': week, 'weekly_reports': weekly_reports.items(), 'weekly_plans': weekly_plans.items(), 'form': form})
+    return render(request, 'week_page.html', {'week': week, 'weekly_reports': weekly_reports.items(), 'weekly_plans': weekly_plans.items(), 'form': form, 'user': user})
 
 
 def show_weeks(request):
@@ -180,7 +187,7 @@ def show_weeks(request):
 
 
 
-class DriverDay(View):
+class DriverDay(LoginRequiredMixin, View):
     def get(self, request, name, shift):
         day = Shift.objects.get(date=shift)
         week = day.week
@@ -242,7 +249,7 @@ class DriverDay(View):
 
 
 
-class CarDay(View):
+class CarDay(LoginRequiredMixin, View):
     def get(self, request, car, shift):
         day = Shift.objects.get(date=shift)
         week = day.week
@@ -269,7 +276,7 @@ class CarDay(View):
 
 
 
-class DriverWeek(View):
+class DriverWeek(LoginRequiredMixin, View):
     def get(self, request, name, week):
         qs = Ride.objects.filter(driver__name=name).select_related('shift__week')
         weeks = []
@@ -287,7 +294,7 @@ class DriverWeek(View):
 
 
 
-class CarWeek(View):
+class CarWeek(LoginRequiredMixin, View):
     def get(self, request, car, week):
         qs = Ride.objects.filter(car__plate=car).select_related('shift__week')
         weeks = []
@@ -304,10 +311,20 @@ class CarWeek(View):
                       {'rides': rides, 'car': car, 'week': week, 'weeks': weeks})
 
 
+@login_required
 def add_report(request, shift, name):
+    user = request.user
     balance_d = BalanceDriver()
     day = Shift.objects.get(date=shift)
     week = day.week
+    try:
+        report = BalanceDriver.objects.filter(driver__name=name).filter(day__date=shift)[0:1].get()
+        if report:
+            warning = 'Отчет уже отправлен!'
+            messages.error(request, 'Доступна только корректировка!')
+            return render(request, '404_report.html', {'week': week, 'warning': warning})
+    except BalanceDriver.DoesNotExist:
+        pass
     try:
         driver = Driver.objects.get(name=name)
     except Driver.DoesNotExist:
@@ -317,7 +334,7 @@ def add_report(request, shift, name):
     except Ride.DoesNotExist:
         return render(request, '404.html', {'week': week})
     car = ride.car
-    form = ReportDriverForm(request.POST or None, initial={
+    form = ReportDriverForm(request.POST or None, week=week.week, user=user, initial={
         'day': day,
         'driver': driver,
         'car': car
@@ -351,6 +368,7 @@ def add_report(request, shift, name):
     return render(request, 'add_report.html', {'form': form, 'week': week})
 
 
+@login_required
 def edit_report(request, shift, name):
     day = Shift.objects.get(date=shift)
     week = day.week
@@ -402,9 +420,11 @@ def edit_report(request, shift, name):
     return render(request, 'add_report.html', {'form': form, 'week': week})
 
 
+@login_required
 def add_plan(request, week):
+    user = request.user
     plan_shift = PlanShift()
-    form = AddPlanForm(request.POST or None, week=week)
+    form = AddPlanForm(request.POST or None, week=week, user=user)
     if form.is_valid():
         data = form.cleaned_data
         plan_shift.plan_day = data.get('plan_day')
@@ -430,6 +450,7 @@ def add_plan(request, week):
     return render(request, 'add_plan.html', {'form': form, 'week': week})
 
 
+@login_required
 def x_plan(request, name, shift):
     plan = PlanShift.objects.filter(plan_day__date=shift).filter(plan_driver__name=name)[0:1].get()
     week = plan.plan_day.week
@@ -437,7 +458,9 @@ def x_plan(request, name, shift):
     return HttpResponseRedirect(reverse('plan_all', args=[week]))
 
 
+@login_required
 def show_plan(request, week):
+    user = request.user
     form = SelectWeekForm(request.POST)
     if form.is_valid():
         data = form.cleaned_data
@@ -446,15 +469,17 @@ def show_plan(request, week):
     days = Shift.objects.filter(week__week=week)
     weekly_plans = {}
     for day in days:
-        week_plans = PlanShift.objects.filter(plan_day=day).order_by('plan_car')
+        week_plans = PlanShift.objects.filter(plan_car__user=user).filter(plan_day=day).order_by('plan_car')
         weekly_plans[day] = week_plans
     return render(request, 'plan_page.html', {'plans': weekly_plans.items(), 'week': week, 'form': form})
 
 
+@login_required
 def edit_plan(request, week, name, shift):
+    user = request.user
     plan = PlanShift.objects.filter(plan_day__date=shift).filter(plan_driver__name=name)[0:1].get()
     plan_try = PlanShift.objects.filter(plan_day__date=shift).filter(plan_driver__name=name)[0:1].get()
-    form = AddPlanForm(request.POST or None, initial={
+    form = AddPlanForm(request.POST or None, user=user, week=week, initial={
         'plan_day': plan.plan_day,
         'plan_car': plan.plan_car,
         'plan_driver': plan.plan_driver
@@ -501,9 +526,12 @@ def signup(request):
     })
 
 @login_required
-def secret_page(request):
-    return render(request, 'secret_page.html')
+def info_page(request):
+    user = request.user
+    park_cars = Car.objects.filter(user=user)
+    park_drivers = Driver.objects.filter(user=user)
+    return render(request, 'park_page.html', {'cars': park_cars, 'drivers': park_drivers})
 
 
 class SecretPage( LoginRequiredMixin, TemplateView):
-    template_name = 'secret_page.html'
+    template_name = 'park_page.html'

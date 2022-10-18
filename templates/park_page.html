@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %} Секрет {% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 mx-auto mb-3">
+            <h3 align="center">Информация о парке:</h3>
+            Авто:
+            <ul>
+            {% for obj in cars %}
+                <li>{{ obj.plate }}</li>
+            {% endfor %}
+            </ul>
+            <hr>
+            Водители:
+            <ul>
+            {% for obj in drivers %}
+                <li>{{ obj.name }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

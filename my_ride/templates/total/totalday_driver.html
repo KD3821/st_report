@@ -126,7 +126,7 @@
             <tr >
                 <td>{{ obj.shift.week }}</td>
                 <td>{{ obj.shift }}</td>
-                <td><a href="{% url 'ride_detail' obj.number obj.driver %}">{{ obj.number }}</a></td>
+                <td><a href="{% url 'ride_detail' obj.shift.week obj.number obj.driver %}">{{ obj.number }}</a></td>
                 <td>{{ obj.price }}</td>
                 <td>{{ obj.cash }}</td>
                 <td>{{ obj.driver }}</td>
@@ -142,7 +142,7 @@
         </table>
     </div>
     <div class="col-md-8 mx-auto">
-        <a href="{% url 'new_ride' %}" role="button" class="btn btn-primary">Добавить заказ</a>
+        <a href="{% url 'new_ride' week %}" role="button" class="btn btn-primary">Добавить заказ</a>
         <a href="{% url 'rides_all'%}"role="button" class="btn btn-info" >Посмотреть все заказы</a>
         <a href="{% url 'new_report' shift name %}" role="button" class="btn btn-success">Отправить отчет</a>
         <a href="{% url 'report_change' shift name%}" role="button" class="btn btn-warning">Изменить отчет</a>

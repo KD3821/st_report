@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.db.models import DateField, CharField, IntegerField, BooleanField, ForeignKey, TextField
 
 
@@ -24,6 +25,7 @@ class Shift(models.Model):
 
 
 class Car(models.Model):
+    user = ForeignKey(User, on_delete=models.CASCADE, related_name='cars')
     plate = CharField(max_length=200)
     rental_rate = IntegerField(default=3000)
 
@@ -33,6 +35,7 @@ class Car(models.Model):
 
 
 class Driver(models.Model):
+    user = ForeignKey(User, on_delete=models.CASCADE, related_name='drivers')
     name = CharField(max_length=200)
     salary = IntegerField(default=0)
     tips = IntegerField(default=0)
@@ -55,6 +58,7 @@ class ExtraTax(models.Model):
 
 
 class Ride(models.Model):
+    user = ForeignKey(User, on_delete=models.CASCADE, related_name='rides')
     number = CharField(max_length=50, verbose_name='Номер заказа')
     driver = ForeignKey(Driver, on_delete=models.CASCADE, verbose_name='Водитель')
     car = ForeignKey(Car, on_delete=models.CASCADE, verbose_name='Авто')

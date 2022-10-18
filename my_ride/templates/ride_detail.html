@@ -19,9 +19,8 @@
         <hr>
     </div>
     <div class="col-md-8 mx-auto">
-        <a href="{% url 'ride_change' ride.number ride.driver %}" role="button" class="btn btn-warning">Корректировка заказа</a>
+        <a href="{% url 'ride_change' ride.shift.week ride.number ride.driver %}" role="button" class="btn btn-warning">Корректировка заказа</a>
         <a href="{% url 'x_ride' ride.number %}" role="button" class="btn btn-danger">Удалить заказ</a>
-        <a href="{% url 'new_ride' %}" role="button" class="btn btn-secondary">Добавить еще заказ</a>
         <a href="{% url 'rides_all' %}" role="button" class="btn btn-info">Посмотреть все заказы</a>
     </div>
 </div>

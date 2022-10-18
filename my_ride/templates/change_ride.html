@@ -18,6 +18,7 @@
     <div class="col-md-7 mx-auto">
         <br>
         <a href="{% url 'rides_all'%}" role="button" class="btn btn-info">Посмотреть все заказы</a>
+        <a href="{% url 'total_day_driver' ride.driver ride.shift %}" role="button" class="btn btn-info">Отчет за смену</a>
     </div>
 </div>
 
