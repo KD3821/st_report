@@ -6,14 +6,17 @@
     <div class="row">
         <div class="col-md-8 mx-auto mb-3">
             <h3 align="center">Информация о парке:</h3>
-            Авто:
+            <strong>Владелец:</strong>
+            <h4 style="color: blue">{{ owner }}</h4>
+            <hr>
+            <strong>Авто:</strong>
             <ul>
             {% for obj in cars %}
                 <li>{{ obj.plate }}</li>
             {% endfor %}
             </ul>
             <hr>
-            Водители:
+            <strong>Водители:</strong>
             <ul>
             {% for obj in drivers %}
                 <li>{{ obj.name }}</li>

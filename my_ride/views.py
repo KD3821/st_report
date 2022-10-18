@@ -109,6 +109,7 @@ def delete_ride(request, number):
     ride.delete()
     rides = Ride.objects.filter(user=user).order_by('shift', 'car')
     rides = prettify(rides)
+    messages.success(request, 'Поездка удалена!')
     return render(request, 'ride_list.html', {'rides': rides})
 
 @login_required
@@ -530,7 +531,7 @@ def info_page(request):
     user = request.user
     park_cars = Car.objects.filter(user=user)
     park_drivers = Driver.objects.filter(user=user)
-    return render(request, 'park_page.html', {'cars': park_cars, 'drivers': park_drivers})
+    return render(request, 'park_page.html', {'cars': park_cars, 'drivers': park_drivers, 'owner': user.username})
 
 
 class SecretPage( LoginRequiredMixin, TemplateView):
