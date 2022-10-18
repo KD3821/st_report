@@ -12,18 +12,39 @@
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light" style="background-color: lightcoral;">
             <div class="container-fluid">
-              <a class="navbar-brand" href="#" id="brand">Твой Парк</a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item ">
-                      <a class="nav-link" href="#" >Ссылка</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="#" >Ссылка</a>
-                    </li>
-                </ul>
+                <a class="navbar-brand" href="#" id="brand">Твой Парк</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto">
+                        {% if user.is_authenticated %}
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'secret'%}" >Секрет</a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'secret2'%}" >Секрет2</a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'password_change'%}" >Сменить пароль</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout'%}" >Выход</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'signup'%}" >Регистрация</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login'%}" >Вход</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                    <form class="d-flex">
+                        <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Search">
+                        <button class="btn btn-outline-secondary" type="submit">Найти</button>
+                    </form>
+                </div>
             </div>
         </nav>
     </div>
@@ -48,18 +69,8 @@
       </div>
       {% if user.is_authenticated %}
       <div class="col-md-3 offset-md-7">
-          <a href="{% url 'secret'%}" role="button" class="btn btn-link" >Секрет</a>
-           <a href="{% url 'secret2'%}" role="button" class="btn btn-link" >Секрет 2</a>
-          <a href="{% url 'password_change'%}" role="button" class="btn btn-link" >Сменить пароль</a>
-          <a href="{% url 'logout'%}" role="button" class="btn btn-link" >Выход</a>
-      </div>
-      <div class="col-md-3 offset-md-7">
           <strong>Вы вошли как:   <span style="color: green;">{{ user.username }}</span></strong><br>
       {% else %}
-      <div class="col-md-3 offset-md-7">
-          <a href="{% url 'signup'%}" role="button" class="btn btn-link" >Регистрация</a>
-          <a href="{% url 'login'%}" role="button" class="btn btn-link" >Вход</a>
-      </div>
       <div class="col-md-3 offset-md-7">
           <strong><span style="color: red;">Вы не авторизованы</span></strong><br>
       {% endif %}
